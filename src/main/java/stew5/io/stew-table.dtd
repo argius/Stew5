@@ -1,0 +1,39 @@
+<?xml version = "1.0" encoding="utf-8"?>
+
+<!-- Stew Table Data XML -->
+
+<!ELEMENT table (headerrow?,row*)>
+
+<!ELEMENT headerrow (header)*>
+<!ELEMENT header (#PCDATA)>
+
+<!ELEMENT row (null    |
+               string  |
+               boolean |
+               byte    |
+               short   |
+               int     |
+               long    |
+               float   |
+               double  |
+               decimal |
+               time    |
+               object)*>
+
+<!ELEMENT null    EMPTY>
+<!ELEMENT string  (#PCDATA)>
+<!ELEMENT boolean (#PCDATA)>
+<!ELEMENT byte    (#PCDATA)>
+<!ELEMENT short   (#PCDATA)>
+<!ELEMENT int     (#PCDATA)>
+<!ELEMENT long    (#PCDATA)>
+<!ELEMENT float   (#PCDATA)>
+<!ELEMENT double  (#PCDATA)>
+<!ELEMENT decimal (#PCDATA)>
+<!ELEMENT time    (#PCDATA)>
+<!ELEMENT object  (#PCDATA)>
+
+<!ATTLIST table  writer  CDATA "">
+<!ATTLIST header index   CDATA "">
+<!ATTLIST time   display CDATA "">
+<!ATTLIST object class   CDATA "">

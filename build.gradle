@@ -1,0 +1,37 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'application'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.hamcrest:hamcrest-junit:2.0.0.0'
+    testCompile 'com.h2database:h2:1.4.191'
+}
+
+version = '5.0.0-alpha-SNAPSHOT'
+
+sourceCompatibility = '1.7'
+targetCompatibility = '1.7'
+
+jar {
+    baseName = 'stew'
+    mainClassName = 'stew5.App'
+    manifest {
+        attributes "Main-Class" : "stew5.App"
+    }
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    doLast {
+        file('$destinationDir/$archiveName').renameTo('$destinationDir/$baseName-$version.jar')
+    }
+}
+
+distZip {
+    baseName = 'stew'
+    doLast {
+        file('$destinationDir/$archiveName').renameTo('$destinationDir/$baseName-$version-bin.zip')
+    }
+}
