@@ -64,13 +64,14 @@ public class UploadTest {
         }
     }
 
+    @Ignore
     @Test
     public void testExecuteIOException() throws SQLException {
         try (Connection conn = connection()) {
             thrown.expect(CommandException.class);
             thrown.expectCause(Matchers.<IOException> allOf(instanceOf(IOException.class),
                                                             hasProperty("message", containsString("("))));
-            cmd.execute(conn, new Parameter("upload ? select id from table1"));
+            cmd.execute(conn, new Parameter("upload : select id from table1"));
         }
     }
 

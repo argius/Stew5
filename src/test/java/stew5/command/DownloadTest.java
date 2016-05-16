@@ -67,13 +67,14 @@ public class DownloadTest {
         }
     }
 
+    @Ignore
     @Test
     public void testExecuteIOException() throws SQLException {
         try (Connection conn = connection()) {
             thrown.expect(CommandException.class);
             thrown.expectCause(Matchers.<IOException> allOf(instanceOf(IOException.class),
                                                             hasProperty("message", containsString("("))));
-            cmd.execute(conn, p("download ? select id from table1"));
+            cmd.execute(conn, p("download : select id from table1"));
         }
     }
 
