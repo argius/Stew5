@@ -7,7 +7,7 @@ A tiny utility tool for database via JDBC
 Requirement
 ===========
 
-Java 1.7 or more, and JDBC drivers to connect your DBMS.
+Java 1.7 or later, and JDBC drivers to connect your DBMS.
 
 
 License
