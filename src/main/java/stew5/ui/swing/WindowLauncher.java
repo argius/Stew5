@@ -285,6 +285,8 @@ public final class WindowLauncher implements
                 statusBar.setVisible(((JCheckBoxMenuItem)source).isSelected());
             } else if (ev.isAnyOf(showColumnNumber)) {
                 resultSetTable.anyActionPerformed(ev);
+            } else if (ev.isAnyOf(showAlwaysOnTop)) {
+                op.setAlwaysOnTop(((JCheckBoxMenuItem)source).isSelected());
             } else if (ev.isAnyOf(refresh)) {
                 refreshResult();
             } else if (ev.isAnyOf(autoAdjustModeNone,
