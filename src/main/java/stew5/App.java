@@ -229,10 +229,10 @@ public final class App {
             throw new IllegalArgumentException("bad option: both --gui and --cui were specified.");
         }
         log.debug("cui=%d, gui=%d, new-args=%s", cuiCount, guiCount, a);
-        if (guiCount > 0) {
-            WindowLauncher.main();
-        } else {
+        if (cuiCount > 0) {
             ConsoleLauncher.main(a.toArray(new String[a.size()]));
+        } else {
+            WindowLauncher.main();
         }
     }
 
