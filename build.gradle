@@ -19,19 +19,12 @@ targetCompatibility = '1.7'
 
 jar {
     baseName = 'stew'
-    mainClassName = 'stew5.App'
+    mainClassName = baseName + '5.App'
     manifest {
-        attributes "Main-Class" : "stew5.App"
+        attributes 'Main-Class' : mainClassName
     }
     from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     doLast {
         file('$destinationDir/$archiveName').renameTo('$destinationDir/$baseName-$version.jar')
-    }
-}
-
-distZip {
-    baseName = 'stew'
-    doLast {
-        file('$destinationDir/$archiveName').renameTo('$destinationDir/$baseName-$version-bin.zip')
     }
 }
