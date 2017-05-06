@@ -1,8 +1,6 @@
 package stew5.ui.console;
 
-import static stew5.text.TextUtilities.*;
 import java.io.IOException;
-import java.util.*;
 import jline.console.ConsoleReader;
 import stew5.*;
 import stew5.ui.*;
@@ -54,10 +52,8 @@ public final class ConsoleLauncher implements Launcher {
         log.info("end");
     }
 
-    /** main **/
-    public static void main(String... args) {
-        List<String> a = new ArrayList<>(Arrays.asList(args));
-        if (a.contains("-v") || a.contains("--version")) {
+    public static void main(OptionSet opts) {
+        if (opts.isShowVersion()) {
             System.out.println("Stew " + App.getVersion());
             return;
         }
@@ -66,11 +62,13 @@ public final class ConsoleLauncher implements Launcher {
             env.setOutputProcessor(new ConsoleOutputProcessor());
             final String about = ResourceManager.Default.get(".about", App.getVersion());
             env.getOutputProcessor().output(about);
-            if (!a.isEmpty() && !a.get(0).startsWith("-")) {
-                Command.invoke(env, "connect " + a.remove(0));
+            String connectorName = opts.getConnecterName();
+            if (!connectorName.isEmpty()) {
+                Command.invoke(env, "connect " + connectorName);
             }
-            if (!a.isEmpty()) {
-                Command.invoke(env, join(" ", a));
+            String commandString = opts.getCommandString();
+            if (!commandString.isEmpty()) {
+                Command.invoke(env, commandString);
                 Command.invoke(env, "disconnect");
             } else {
                 Launcher o = new ConsoleLauncher();
@@ -78,6 +76,15 @@ public final class ConsoleLauncher implements Launcher {
             }
         } finally {
             env.release();
+        }
+    }
+
+    /** main **/
+    public static void main(String... args) {
+        try {
+            main(OptionSet.parseArguments(args));
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
         }
     }
 

@@ -60,7 +60,7 @@ public final class App {
         if (log.isDebugEnabled()) {
             int i = 3;
             for (Properties p : new Properties[]{group3, group2}) {
-                List<String> list = new ArrayList<String>(p.size());
+                List<String> list = new ArrayList<>(p.size());
                 for (Object key : p.keySet()) {
                     list.add((String)key);
                 }
@@ -203,19 +203,15 @@ public final class App {
     public static void main(String... args) {
         int guiCount = 0;
         int cuiCount = 0;
-        List<String> a = new ArrayList<String>();
-        for (String arg : args) {
-            if (arg.matches("(?i)\\s*--GUI\\s*")) {
-                ++guiCount;
-            } else if (arg.matches("(?i)\\s*--CUI\\s*")) {
-                ++cuiCount;
-            } else {
-                a.add(arg);
-            }
+        OptionSet opts;
+        try {
+            opts = OptionSet.parseArguments(args);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
         }
         if (guiCount == 0 && cuiCount == 0) {
-            for (String k : new String[]{"stew.bootstrap", "stew.boot",
-                                         "net.argius.stew.bootstrap", "net.argius.stew.boot",}) {
+            for (String k : new String[]{"stew.bootstrap", "stew.boot", "net.argius.stew.bootstrap",
+                                         "net.argius.stew.boot",}) {
                 final String v = props.getProperty(k, "");
                 if (v.equalsIgnoreCase("GUI")) {
                     ++guiCount;
@@ -225,14 +221,14 @@ public final class App {
                 }
             }
         }
-        if (guiCount > 0 && cuiCount > 0) {
-            throw new IllegalArgumentException("bad option: both --gui and --cui were specified.");
-        }
-        log.debug("cui=%d, gui=%d, new-args=%s", cuiCount, guiCount, a);
-        if (cuiCount > 0) {
-            ConsoleLauncher.main(a.toArray(new String[a.size()]));
-        } else {
-            WindowLauncher.main();
+        if (opts.isCui()) {
+            ConsoleLauncher.main(args);
+        } else if (opts.isGui()) {
+            WindowLauncher.main(args);
+        } else if (cuiCount > 0) {
+            ConsoleLauncher.main(args);
+        } else if (guiCount > 0) {
+            WindowLauncher.main(args);
         }
     }
 
