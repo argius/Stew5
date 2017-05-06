@@ -209,6 +209,10 @@ public final class App {
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
         }
+        if (opts.isShowVersion()) {
+            System.out.println("Stew " + App.getVersion());
+            return;
+        }
         if (guiCount == 0 && cuiCount == 0) {
             for (String k : new String[]{"stew.bootstrap", "stew.boot", "net.argius.stew.bootstrap",
                                          "net.argius.stew.boot",}) {
