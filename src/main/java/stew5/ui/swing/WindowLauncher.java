@@ -1,10 +1,9 @@
 package stew5.ui.swing;
 
-import static java.awt.event.ActionEvent.ACTION_PERFORMED;
+import static java.awt.event.ActionEvent.*;
 import static javax.swing.JOptionPane.*;
-import static javax.swing.JSplitPane.VERTICAL_SPLIT;
-import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
-import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS;
+import static javax.swing.JSplitPane.*;
+import static javax.swing.ScrollPaneConstants.*;
 import static stew5.ui.swing.AnyActionKey.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -13,14 +12,14 @@ import java.io.*;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.sql.*;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.concurrent.*;
 import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
-import javax.swing.text.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.table.JTableHeader;
+import javax.swing.text.JTextComponent;
 import stew5.*;
 import stew5.ui.*;
 
@@ -75,7 +74,7 @@ public final class WindowLauncher implements
         this.infoTree = infoTree;
         this.textSearchPanel = new TextSearchPanel(op);
         this.statusBar = new JLabel(" ");
-        this.historyList = new LinkedList<String>();
+        this.historyList = new LinkedList<>();
         this.historyIndex = 0;
         this.executorService = Executors.newScheduledThreadPool(3,
                                                                 DaemonThreadFactory.getInstance());
@@ -96,7 +95,7 @@ public final class WindowLauncher implements
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(false);
         // text search
-        this.textSearchMap = new LinkedHashMap<JComponent, TextSearch>();
+        this.textSearchMap = new LinkedHashMap<>();
         final TextSearchPanel textSearchPanel = this.textSearchPanel;
         final Map<JComponent, TextSearch> textSearchMap = this.textSearchMap;
         textSearchMap.put(infoTree, infoTree);
@@ -618,7 +617,7 @@ public final class WindowLauncher implements
      * Starts to exit application.
      */
     static void exit() {
-        for (WindowLauncher instance : new ArrayList<WindowLauncher>(instances)) {
+        for (WindowLauncher instance : new ArrayList<>(instances)) {
             try {
                 instance.close();
             } catch (Exception ex) {
@@ -832,7 +831,7 @@ public final class WindowLauncher implements
     }
 
     static void wakeup() {
-        for (WindowLauncher instance : new ArrayList<WindowLauncher>(instances)) {
+        for (WindowLauncher instance : new ArrayList<>(instances)) {
             try {
                 SwingUtilities.updateComponentTreeUI(instance.op);
             } catch (Exception ex) {
