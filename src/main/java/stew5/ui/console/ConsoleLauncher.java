@@ -1,7 +1,9 @@
 package stew5.ui.console;
 
 import static stew5.text.TextUtilities.*;
+import java.io.IOException;
 import java.util.*;
+import jline.console.ConsoleReader;
 import stew5.*;
 import stew5.ui.*;
 
@@ -16,16 +18,31 @@ public final class ConsoleLauncher implements Launcher {
     @Override
     public void launch(Environment env) {
         log.info("start");
-        OutputProcessor out = env.getOutputProcessor();
+        ConsoleReader cr;
+        try {
+            @SuppressWarnings("resource")
+            ConsoleReader cr0 = new ConsoleReader();
+            cr = cr0;
+        } catch (IOException e) {
+            log.error(e, "(new ConsoleReader)");
+            System.out.println(e.getMessage());
+            return;
+        }
+        cr.setBellEnabled(false);
+        cr.setHistoryEnabled(true);
         Prompt prompt = new Prompt(env);
-        @SuppressWarnings("resource")
-        Scanner scanner = new Scanner(System.in);
         while (true) {
-            out.output(prompt);
-            if (!scanner.hasNextLine()) {
+            cr.setPrompt(prompt.toString());
+            String line;
+            try {
+                line = cr.readLine();
+            } catch (IOException e) {
+                log.warn(e);
+                continue;
+            }
+            if (line == null) {
                 break;
             }
-            final String line = scanner.nextLine();
             log.debug("input : %s", line);
             if (String.valueOf(line).trim().equals("--edit")) {
                 ConnectorMapEditor.invoke();
@@ -39,7 +56,7 @@ public final class ConsoleLauncher implements Launcher {
 
     /** main **/
     public static void main(String... args) {
-        List<String> a = new ArrayList<String>(Arrays.asList(args));
+        List<String> a = new ArrayList<>(Arrays.asList(args));
         if (a.contains("-v") || a.contains("--version")) {
             System.out.println("Stew " + App.getVersion());
             return;
