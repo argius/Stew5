@@ -3,6 +3,7 @@ i.choose-connection=接続を選択
 i.choose-history=コマンド履歴{0}件からコマンドを選択
 i.confirm-close=ウィンドウを閉じてよろしいですか？
 i.confirm-commit=コミットします。よろしいですか？
+i.confirm-jump-to-web=このコマンドは以下のWebページをWebブラウザーで開きます。よろしいですか？\n{0}
 i.confirm-overwrite=ファイル {0} は存在します。\n上書きしますか？
 i.confirm-quit=終了してよろしいですか？
 i.confirm-remove=削除してよろしいですか？
@@ -28,6 +29,8 @@ e.error-no-detail=エラー(詳細不明)
 e.error=エラー
 e.file-not-exists=ファイル {0} は存在しません。
 e.id-already-exists=ID [{0}] は既に存在します。
+
+key.lang=ja
 
 # common menu items
 item.cut=切り取り

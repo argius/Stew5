@@ -10,6 +10,7 @@ import java.awt.event.*;
 import java.beans.*;
 import java.io.*;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.net.*;
 import java.sql.*;
 import java.util.*;
 import java.util.List;
@@ -729,27 +730,25 @@ public final class WindowLauncher implements
     }
 
     private static void showHelp() {
-        final File localeFile = new File("MANUAL_" + Locale.getDefault().getLanguage() + ".html");
-        final File htmlFile = (localeFile.exists()) ? localeFile : new File("MANUAL.html");
-        boolean wasOpened = false;
+        final String suffix;
+        if (res.containsKey("key.lang")) {
+            suffix = res.get("key.lang");
+        } else {
+            suffix = "en"; // default locale
+        }
+        final String url = "https://github.com/argius/Stew5/wiki/UserGuide_" + suffix;
+        if (showConfirmDialog(null, res.get("i.confirm-jump-to-web", url), null, OK_CANCEL_OPTION) != OK_OPTION) {
+            return;
+        }
         if (Desktop.isDesktopSupported()) {
             Desktop desktop = Desktop.getDesktop();
-            if (desktop.isSupported(Desktop.Action.OPEN)) {
-                if (htmlFile.exists()) {
-                    try {
-                        desktop.open(htmlFile);
-                        wasOpened = true;
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
+            if (desktop.isSupported(Desktop.Action.BROWSE)) {
+                try {
+                    desktop.browse(new URI(url));
+                } catch (IOException | URISyntaxException ex) {
+                    throw new RuntimeException(ex);
                 }
             }
-        }
-        if (!wasOpened) {
-            final String msg = String.format("%s%nfile=%s",
-                                             res.get("e.cannot-open-help-automatically", htmlFile),
-                                             htmlFile.getAbsolutePath());
-            WindowOutputProcessor.showInformationMessageDialog(getRootFrame(), msg, "");
         }
     }
 

@@ -3,6 +3,7 @@ i.choose-connection=Choose Connector
 i.choose-history=Choose a command history of {0} histories
 i.confirm-close=Do you want to close this window?
 i.confirm-commit=Do you want to commit?
+i.confirm-jump-to-web=This command attempts to open the page of the following URL with your web browser, Ok?\n{0}
 i.confirm-overwrite=The file [{0}] already exists. Overwrite it?
 i.confirm-quit=Do you want to exit?
 i.confirm-remove=Do you want to remove it?
