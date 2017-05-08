@@ -90,7 +90,7 @@ final class ConnectorEditDialog extends JDialog implements AnyActionListener {
         p.addComponent(tPassword, true);
         PasswordItem[] items = {new PasswordItem(PlainTextPassword.class),
                                 new PasswordItem(PbePassword.class)};
-        cPasswordClass = new JComboBox<PasswordItem>(items);
+        cPasswordClass = new JComboBox<>(items);
         cPasswordClass.setEditable(true);
         int passwordClassSelectedIndex = -1;
         for (int i = 0; i < items.length; i++) {
@@ -222,9 +222,9 @@ final class ConnectorEditDialog extends JDialog implements AnyActionListener {
             return;
         }
         String[] names = {"id", "name", "classpath", "driver", "url", "user"};
-        Vector<Vector<String>> data = new Vector<Vector<String>>();
+        Vector<Vector<String>> data = new Vector<>();
         for (Entry<String, Connector> entry : m.entrySet()) {
-            Vector<String> a = new Vector<String>(names.length);
+            Vector<String> a = new Vector<>(names.length);
             Properties p = entry.getValue().toProperties();
             p.setProperty("id", entry.getKey());
             for (String name : names) {
@@ -236,7 +236,7 @@ final class ConnectorEditDialog extends JDialog implements AnyActionListener {
         t.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         t.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         t.setDefaultEditor(Object.class, null);
-        Vector<String> headers = new Vector<String>();
+        Vector<String> headers = new Vector<>();
         for (String name : names) {
             headers.add(res.get("connector." + name));
         }
@@ -249,7 +249,7 @@ final class ConnectorEditDialog extends JDialog implements AnyActionListener {
             return;
         }
         final Properties selected = m.get(t.getValueAt(t.getSelectedRow(), 0)).toProperties();
-        Map<String, JTextField> pairs = new HashMap<String, JTextField>();
+        Map<String, JTextField> pairs = new HashMap<>();
         pairs.put("name", tName);
         pairs.put("classpath", tClasspath);
         pairs.put("driver", tDriver);
@@ -303,7 +303,7 @@ final class ConnectorEditDialog extends JDialog implements AnyActionListener {
             }
             text = App.getProperty("java.class.path");
         }
-        final Set<String> classes = new LinkedHashSet<String>();
+        final Set<String> classes = new LinkedHashSet<>();
         for (String path : text.split(File.pathSeparator)) {
             File file = new File(path);
             final URL[] urls;
