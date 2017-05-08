@@ -147,7 +147,7 @@ final class ConnectorMapEditDialog extends JDialog implements ChangeListener, An
             if (showConfirmDialog(this, res.get("i.confirm-remove"), "", OK_CANCEL_OPTION) != OK_OPTION) {
                 return;
             }
-            ConnectorEntry selected = (ConnectorEntry)idList.getSelectedValue();
+            ConnectorEntry selected = idList.getSelectedValue();
             connectorMap.remove(selected.getId());
             DefaultListModel<ConnectorEntry> m = (DefaultListModel<ConnectorEntry>)idList.getModel();
             m.removeElement(selected);
@@ -190,7 +190,7 @@ final class ConnectorMapEditDialog extends JDialog implements ChangeListener, An
     }
 
     void openConnectorEditDialog() {
-        ConnectorEntry entry = (ConnectorEntry)idList.getSelectedValue();
+        ConnectorEntry entry = idList.getSelectedValue();
         openConnectorEditDialog(entry.getConnector());
     }
 
