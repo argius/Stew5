@@ -9,7 +9,7 @@ import stew5.io.CsvFormatter.FormatType;
  */
 public final class SimpleExporter extends Exporter {
 
-    private static final String PROP_FORMAT = SimpleExporter.class.getName() + ".format";
+    private static final String PROP_FORMAT = App.rootPackageName + ".SimpleExporter.format";
 
     private final String separator;
 
@@ -56,7 +56,7 @@ public final class SimpleExporter extends Exporter {
 
     private static CsvFormatter getDefaultFormatter() {
         try {
-            switch (FormatType.of(App.getProperty(PROP_FORMAT).toUpperCase())) {
+            switch (FormatType.of(App.props.get(PROP_FORMAT).toUpperCase())) {
                 case STRING:
                     return CsvFormatter.STRING;
                 case ESCAPE:

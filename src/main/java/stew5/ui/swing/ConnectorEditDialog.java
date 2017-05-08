@@ -301,7 +301,7 @@ final class ConnectorEditDialog extends JDialog implements AnyActionListener {
             if (showConfirmDialog(this, message, null, OK_CANCEL_OPTION) != OK_OPTION) {
                 return;
             }
-            text = App.getProperty("java.class.path");
+            text = System.getProperty("java.class.path");
         }
         final Set<String> classes = new LinkedHashSet<>();
         for (String path : text.split(File.pathSeparator)) {

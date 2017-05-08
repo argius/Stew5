@@ -16,7 +16,6 @@ import stew5.io.*;
 public final class Import extends Load {
 
     private static final Logger log = Logger.getLogger(Import.class);
-    private static final String PROP_BATCH_LIMIT = "net.argius.stew.command.Import.batch.limit";
     private static final int DEFAULT_BATCH_LIMIT = 10000;
 
     @Override
@@ -47,7 +46,7 @@ public final class Import extends Load {
 
     @Override
     protected void insertRecords(PreparedStatement stmt, Importer importer) throws IOException, SQLException {
-        final int batchLimit = App.getPropertyAsInt(PROP_BATCH_LIMIT, DEFAULT_BATCH_LIMIT);
+        final int batchLimit = App.props.getAsInt("command.Import.batch.limit", DEFAULT_BATCH_LIMIT);
         if (log.isDebugEnabled()) {
             log.debug("batch limit = " + batchLimit);
         }

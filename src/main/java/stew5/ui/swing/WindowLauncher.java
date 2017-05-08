@@ -859,7 +859,7 @@ public final class WindowLauncher implements
      * @param args
      */
     public static void main(String... args) {
-        final int residentCycle = App.getPropertyAsInt("net.argius.stew.ui.window.resident", 0);
+        final int residentCycle = App.props.getAsInt("ui.window.resident", 0);
         if (residentCycle > 0) {
             final long msec = residentCycle * 60000L;
             Timer timer = new Timer(true);

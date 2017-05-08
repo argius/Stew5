@@ -10,15 +10,19 @@ import stew5.ui.swing.WindowLauncher;
  */
 public final class App {
 
-    public static final String rootPackageName = App.class.getPackage().getName();
-
+    // These fields need to evaluate orderly on static-initializer
     private static final Logger log = Logger.getLogger(App.class);
+
+    public static final String rootPackageName = App.class.getPackage().getName();
+    private static final File dir = initializeDirectory();
+    public static final LayeredProperties props = initializeProperties();
+
     private static final String PropKey = "net.argius.stew.properties";
     private static final String PropFileName = "stew.properties";
     private static final String DefaultDir = ".stew";
 
-    private static final File dir = initializeDirectory();
-    private static Properties props = initializeProperties();
+    private App() { // empty
+    }
 
     private static File initializeDirectory() {
         File directory;
@@ -48,79 +52,23 @@ public final class App {
         return directory;
     }
 
-    private static Properties initializeProperties() {
-        Properties group3 = System.getProperties();
-        Properties group2 = new Properties(group3);
-        try {
-            group2.putAll(getFileProperties());
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        Properties group1 = new Properties(group2);
+    private static LayeredProperties initializeProperties() {
+        Map<String, String> layer1 = System.getenv();
+        Properties layer2 = getFileProperties();
+        Properties layer3 = System.getProperties();
+        LayeredProperties newProps = new LayeredProperties(layer1, layer2, layer3);
         if (log.isDebugEnabled()) {
-            int i = 3;
-            for (Properties p : new Properties[]{group3, group2}) {
-                List<String> list = new ArrayList<>(p.size());
-                for (Object key : p.keySet()) {
-                    list.add((String)key);
-                }
-                Collections.sort(list);
-                Writer buffer = new StringWriter();
-                PrintWriter out = new PrintWriter(buffer);
-                out.println();
-                out.println("--- property group " + (i--) + " ---");
-                for (Iterator<String> it = list.iterator(); it.hasNext();) {
-                    String key = it.next();
-                    out.println(key + '=' + p.getProperty(key));
-                }
-                log.setEnteredMethodName("initializeProperties");
-                log.debug(buffer);
-                log.setEnteredMethodName("");
-            }
+            log.debug(newProps.dump());
         }
-        return group1;
+        return newProps;
     }
 
-    private static Properties getFileProperties() throws IOException {
+    private static Properties getFileProperties() {
         Properties props = new Properties();
-        // system property
-        String path = System.getProperty(PropFileName);
-        if (path != null) {
-            File file = new File(path);
-            if (file.isDirectory()) {
-                file = new File(file, PropFileName);
-            }
-            if (file.exists()) {
-                InputStream is = new FileInputStream(file);
-                try {
-                    props.load(is);
-                    return props;
-                } finally {
-                    is.close();
-                }
-            }
-        }
-        // classpath
-        String resourcePath = "/" + PropFileName;
-        InputStream res = App.class.getResourceAsStream(resourcePath);
-        if (res != null) {
-            try {
-                props.load(res);
-                return props;
-            } finally {
-                res.close();
-            }
-        }
-        // system directory
-        File currentdirfile = new File(dir, PropFileName);
-        if (currentdirfile.exists()) {
-            InputStream is = new FileInputStream(currentdirfile);
-            try {
-                props.load(is);
-                return props;
-            } finally {
-                is.close();
-            }
+        try (InputStream is = new FileInputStream(new File(dir, PropFileName))) {
+            props.load(is);
+        } catch (IOException e) {
+            log.warn(e, "getFileProperties");
         }
         return props;
     }
@@ -142,8 +90,9 @@ public final class App {
      * @param key
      * @return
      */
+    @Deprecated
     public static String getProperty(String key) {
-        return props.getProperty(key, "");
+        return props.get(key.replace("net.argius.stew.", ""), "");
     }
 
     /**
@@ -152,8 +101,9 @@ public final class App {
      * @param defaultValue
      * @return
      */
+    @Deprecated
     public static String getProperty(String key, String defaultValue) {
-        return props.getProperty(key, defaultValue);
+        return props.get(key.replace("net.argius.stew.", defaultValue));
     }
 
     /**
@@ -162,15 +112,9 @@ public final class App {
      * @param defaultValue
      * @return
      */
+    @Deprecated
     public static int getPropertyAsInt(String key, int defaultValue) {
-        if (props.getProperty(key) != null) {
-            try {
-                return Integer.parseInt(props.getProperty(key, ""));
-            } catch (NumberFormatException ex) {
-                log.warn(ex);
-            }
-        }
-        return defaultValue;
+        return props.getAsInt(key.replace("net.argius.stew.", ""), defaultValue);
     }
 
     /**
@@ -178,8 +122,9 @@ public final class App {
      * @param key
      * @return
      */
+    @Deprecated
     public static boolean getPropertyAsBoolean(String key) {
-        return Boolean.valueOf(props.getProperty(key, ""));
+        return props.getAsBoolean(key.replace("net.argius.stew.", ""));
     }
 
     /**
@@ -187,8 +132,9 @@ public final class App {
      * @param key
      * @return
      */
+    @Deprecated
     public static boolean hasProperty(String key) {
-        return props.containsKey(key);
+        return props.hasKey(key.replace("net.argius.stew.", ""));
     }
 
     /**
@@ -214,9 +160,8 @@ public final class App {
             return;
         }
         if (guiCount == 0 && cuiCount == 0) {
-            for (String k : new String[]{"stew.bootstrap", "stew.boot", "net.argius.stew.bootstrap",
-                                         "net.argius.stew.boot",}) {
-                final String v = props.getProperty(k, "");
+            for (String k : new String[]{"bootstrap", "boot",}) {
+                final String v = props.get(k, "");
                 if (v.equalsIgnoreCase("GUI")) {
                     ++guiCount;
                 }

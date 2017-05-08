@@ -81,8 +81,7 @@ public final class ConsoleOutputProcessor implements OutputProcessor {
             System.out.println(PrintFormat.format(format, borders));
             // beginning of loop
             Object[] a = new Object[columnCount];
-            final int limit = App.getPropertyAsInt("net.argius.stew.rowcount.limit",
-                                                         Integer.MAX_VALUE);
+            final int limit = App.props.getAsInt("rowcount.limit", Integer.MAX_VALUE);
             int count = 0;
             while (rs.next()) {
                 if (count >= limit) {

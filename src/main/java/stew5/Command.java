@@ -231,8 +231,7 @@ public abstract class Command {
                 }
             }
             setTimeout(stmt);
-            final int limit = App.getPropertyAsInt("net.argius.stew.rowcount.limit",
-                                                         Integer.MAX_VALUE);
+            final int limit = App.props.getAsInt("rowcount.limit", Integer.MAX_VALUE);
             if (limit > 0 && limit != Integer.MAX_VALUE) {
                 stmt.setMaxRows(limit + 1);
             }

@@ -110,7 +110,7 @@ public final class Environment {
         setCurrentConnector(connector);
         outputMessage("i.connected");
         log.debug("connected %s (conn=%08x, env=%08x)", connector.getId(), conn.hashCode(), hashCode());
-        if (App.getPropertyAsBoolean("net.argius.stew.print-connected-time")) {
+        if (App.props.getAsBoolean("print-connected-time")) {
             outputMessage("i.now", System.currentTimeMillis());
         }
     }
@@ -145,7 +145,7 @@ public final class Environment {
                     final String id = (connector == null) ? "null" : connector.getId();
                     log.debug("disconnected %s (conn=%08x, env=%08x)", id, conn.hashCode(), hashCode());
                 }
-                if (App.getPropertyAsBoolean("net.argius.stew.print-disconnected-time")) {
+                if (App.props.getAsBoolean("print-disconnected-time")) {
                     outputMessage("i.now", System.currentTimeMillis());
                 }
             } catch (SQLException ex) {
@@ -165,9 +165,9 @@ public final class Environment {
     }
 
     private static File getInitialCurrentDirectory() {
-        final String propkey = "net.argius.stew.directory";
-        if (App.hasProperty(propkey)) {
-            File directory = new File(App.getProperty(propkey, ""));
+        final String propkey = "directory";
+        if (App.props.hasKey(propkey)) {
+            File directory = new File(App.props.get(propkey, ""));
             if (directory.isDirectory()) {
                 return directory;
             }
@@ -176,7 +176,7 @@ public final class Environment {
     }
 
     private void initializeQueryTimeout() {
-        this.timeoutSeconds = App.getPropertyAsInt("net.argius.stew.query.timeout", -1);
+        this.timeoutSeconds = App.props.getAsInt("query.timeout", -1);
         if (log.isDebugEnabled()) {
             log.debug("timeout: " + this.timeoutSeconds);
         }

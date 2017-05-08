@@ -1,7 +1,6 @@
 package stew5.ui.swing;
 
 import static javax.swing.JOptionPane.*;
-import static stew5.App.*;
 import static stew5.ui.swing.AnyActionKey.*;
 import static stew5.ui.swing.Utilities.*;
 import java.awt.*;
@@ -125,7 +124,7 @@ final class WindowOutputProcessor extends JFrame implements OutputProcessor, Any
         final ResultSetTableModel m = new ResultSetTableModel(ref);
         Vector<Object> v = new Vector<Object>(columnCount);
         ValueTransporter transfer = ValueTransporter.getInstance("");
-        final int limit = App.getPropertyAsInt("net.argius.stew.rowcount.limit", Integer.MAX_VALUE);
+        final int limit = App.props.getAsInt("rowcount.limit", Integer.MAX_VALUE);
         int rowCount = 0;
         while (rs.next()) {
             if (rowCount >= limit) {
@@ -196,10 +195,10 @@ final class WindowOutputProcessor extends JFrame implements OutputProcessor, Any
             aa.doLater("focusWindow", true);
             return;
         }
-        final String prefix = getClass().getName() + ".postprocess.";
-        final int count = getPropertyAsInt(prefix + "count", 32);
-        final int range = getPropertyAsInt(prefix + "range", 2);
-        final long interval = getPropertyAsInt(prefix + "interval", 50);
+        final String prefix = "stew.ui.swing.postprocess.";
+        final int count = App.props.getAsInt(prefix + "count", 32);
+        final int range = App.props.getAsInt(prefix + "range", 2);
+        final long interval = App.props.getAsInt(prefix + "interval", 50);
         switch (AnyActionKey.of(postProcessMode)) {
             case postProcessModeNone:
                 break;
