@@ -78,7 +78,7 @@ public abstract class Exporter {
      * @throws IOException
      */
     public static Exporter getExporter(File file) throws IOException {
-        return ExporterFactory.createExporter(new Path(file));
+        return ExporterFactory.createExporter(file);
     }
 
     /**
@@ -88,7 +88,7 @@ public abstract class Exporter {
      * @throws IOException
      */
     public static Exporter getExporter(String fileName) throws IOException {
-        return ExporterFactory.createExporter(new Path(fileName));
+        return ExporterFactory.createExporter(new File(fileName));
     }
 
     /**

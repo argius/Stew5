@@ -46,7 +46,7 @@ public abstract class Importer {
     /**
      * Reads the header.
      * @return
-     * @throws IOException 
+     * @throws IOException
      */
     protected Object[] readHeader() throws IOException {
         ensureOpen();
@@ -76,7 +76,7 @@ public abstract class Importer {
      * @throws IOException
      */
     public static Importer getImporter(File file) throws IOException {
-        return ImporterFactory.createImporter(new Path(file));
+        return ImporterFactory.createImporter(file);
     }
 
     /**
@@ -86,7 +86,7 @@ public abstract class Importer {
      * @throws IOException
      */
     public static Importer getImporter(String fileName) throws IOException {
-        return ImporterFactory.createImporter(new Path(fileName));
+        return ImporterFactory.createImporter(new File(fileName));
     }
 
     /**

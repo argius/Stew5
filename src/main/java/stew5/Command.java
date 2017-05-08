@@ -4,7 +4,7 @@ import java.io.*;
 import java.nio.channels.Channels;
 import java.sql.*;
 import java.util.Scanner;
-import stew5.io.Path;
+import stew5.io.FileUtilities;
 import stew5.ui.OutputProcessor;
 
 /**
@@ -101,7 +101,7 @@ public abstract class Command {
      * @return
      */
     protected final File resolvePath(String path) {
-        return Path.resolve(env.getCurrentDirectory(), path);
+        return FileUtilities.resolve(env.getCurrentDirectory(), path);
     }
 
     /**
@@ -111,7 +111,7 @@ public abstract class Command {
      * @return
      */
     protected final File resolvePath(File file) {
-        return Path.resolve(env.getCurrentDirectory(), file);
+        return FileUtilities.resolve(env.getCurrentDirectory(), file);
     }
 
     /**

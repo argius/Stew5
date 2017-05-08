@@ -117,7 +117,7 @@ final class CommandProcessor {
             if (!p.has(1)) {
                 throw new UsageException(res.get("usage.-f"));
             }
-            final File file = Path.resolve(env.getCurrentDirectory(), p.at(1));
+            final File file = FileUtilities.resolve(env.getCurrentDirectory(), p.at(1));
             final String abspath = file.getAbsolutePath();
             if (log.isDebugEnabled()) {
                 log.debug("absolute path = [%s]", abspath);
@@ -143,7 +143,7 @@ final class CommandProcessor {
             }
             final File file;
             if (p1.contains(".")) { // by extension
-                file = Path.resolve(env.getCurrentDirectory(), p1);
+                file = FileUtilities.resolve(env.getCurrentDirectory(), p1);
                 if (!file.exists() || !file.isFile()) {
                     outputMessage("e.file-not-exists", p1);
                     return true;
@@ -155,7 +155,7 @@ final class CommandProcessor {
             }
             ScriptEngine engine = (file == null)
                 ? new ScriptEngineManager().getEngineByName(p1)
-                : new ScriptEngineManager().getEngineByExtension(Path.getExtension(file));
+                : new ScriptEngineManager().getEngineByExtension(FileUtilities.getExtension(file));
             if (engine == null) {
                 outputMessage("e.unsupported", p1);
                 return true;
@@ -211,7 +211,7 @@ final class CommandProcessor {
                     if (aliasMap.isEmpty()) {
                         outputMessage("i.noalias");
                     } else {
-                        for (final String key : new TreeSet<String>(aliasMap.keys())) {
+                        for (final String key : new TreeSet<>(aliasMap.keys())) {
                             outputMessage("i.dump-alias", key, aliasMap.getValue(key));
                         }
                     }
