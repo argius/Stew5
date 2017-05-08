@@ -13,7 +13,7 @@ public final class ColumnOrder {
      * A constructor.
      */
     public ColumnOrder() {
-        this.list = new ArrayList<Entry>();
+        this.list = new ArrayList<>();
     }
 
     /**

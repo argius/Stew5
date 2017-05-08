@@ -186,7 +186,7 @@ final class ResultSetTableModel extends DefaultTableModel {
         executeInsert(getRowData(columnIdentifiers.toArray(), rowIndex));
         @SuppressWarnings("unchecked")
         Vector<Object> rows = getDataVector();
-        rows.set(rowIndex, new Vector<Object>((Vector<?>)rows.get(rowIndex)));
+        rows.set(rowIndex, new Vector<>((Vector<?>)rows.get(rowIndex)));
         return true;
     }
 
@@ -206,7 +206,7 @@ final class ResultSetTableModel extends DefaultTableModel {
     }
 
     private Map<Object, Object> getRowData(Object[] keys, int rowIndex) {
-        Map<Object, Object> rowData = new LinkedHashMap<Object, Object>();
+        Map<Object, Object> rowData = new LinkedHashMap<>();
         for (int columnIndex = 0, n = keys.length; columnIndex < n; columnIndex++) {
             rowData.put(keys[columnIndex], getValueAt(rowIndex, columnIndex));
         }
@@ -320,7 +320,7 @@ final class ResultSetTableModel extends DefaultTableModel {
                                          tableName,
                                          quoteIfNeeds(targetKey),
                                          toKeyPhrase(primaryKeys));
-        List<Object> a = new ArrayList<Object>();
+        List<Object> a = new ArrayList<>();
         a.add(targetValue);
         for (Object pk : primaryKeys) {
             a.add(keyMap.get(pk));
@@ -330,8 +330,8 @@ final class ResultSetTableModel extends DefaultTableModel {
 
     private void executeInsert(Map<Object, Object> rowData) throws SQLException {
         final int dataSize = rowData.size();
-        List<Object> keys = new ArrayList<Object>(dataSize);
-        List<Object> values = new ArrayList<Object>(dataSize);
+        List<Object> keys = new ArrayList<>(dataSize);
+        List<Object> values = new ArrayList<>(dataSize);
         for (Entry<?, ?> entry : rowData.entrySet()) {
             keys.add(quoteIfNeeds(String.valueOf(entry.getKey())));
             values.add(entry.getValue());
@@ -347,7 +347,7 @@ final class ResultSetTableModel extends DefaultTableModel {
         final String sql = String.format("DELETE FROM %s WHERE %s",
                                          tableName,
                                          toKeyPhrase(primaryKeys));
-        List<Object> a = new ArrayList<Object>();
+        List<Object> a = new ArrayList<>();
         for (Object pk : primaryKeys) {
             a.add(keyMap.get(pk));
         }
@@ -360,7 +360,7 @@ final class ResultSetTableModel extends DefaultTableModel {
             log.debug("parameters: " + Arrays.asList(parameters));
         }
         final CountDownLatch latch = new CountDownLatch(1);
-        final List<SQLException> errors = new ArrayList<SQLException>();
+        final List<SQLException> errors = new ArrayList<>();
         final Connection conn = this.conn;
         final int[] types = this.types;
         // asynchronous execution
@@ -441,7 +441,7 @@ final class ResultSetTableModel extends DefaultTableModel {
     }
 
     private static String toKeyPhrase(Object[] keys) {
-        List<String> a = new ArrayList<String>(keys.length);
+        List<String> a = new ArrayList<>(keys.length);
         for (final Object key : keys) {
             a.add(String.format("%s=?", key));
         }
@@ -588,8 +588,8 @@ final class ResultSetTableModel extends DefaultTableModel {
                                                String table) throws SQLException {
         ResultSet rs = dbmeta.getPrimaryKeys(catalog, schema, table);
         try {
-            List<String> pkList = new ArrayList<String>();
-            Set<String> schemaSet = new HashSet<String>();
+            List<String> pkList = new ArrayList<>();
+            Set<String> schemaSet = new HashSet<>();
             while (rs.next()) {
                 pkList.add(rs.getString(4));
                 schemaSet.add(rs.getString(2));

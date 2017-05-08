@@ -49,7 +49,7 @@ public final class SmartImporter extends Importer {
     @Override
     public Object[] nextRow() throws IOException {
         ensureOpen();
-        List<String> row = new ArrayList<String>();
+        List<String> row = new ArrayList<>();
         while (true) {
             if (!fillBuffer(1)) {
                 break;

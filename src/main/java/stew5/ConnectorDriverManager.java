@@ -25,16 +25,16 @@ final class ConnectorDriverManager {
         assert !isBlank(url);
         final boolean hasClasspath = !isBlank(classpath);
         if (!hasClasspath) {
-            for (Driver driver : new ArrayList<Driver>(drivers)) {
+            for (Driver driver : new ArrayList<>(drivers)) {
                 if (driver.acceptsURL(url)) {
                     return driver;
                 }
             }
         }
-        List<File> jars = new ArrayList<File>();
+        List<File> jars = new ArrayList<>();
         ClassLoader cl;
         if (hasClasspath) {
-            List<URL> urls = new ArrayList<URL>();
+            List<URL> urls = new ArrayList<>();
             for (String path : classpath.split(pathSeparator)) {
                 final File file = new File(path);
                 if (isJarFile(file)) {
@@ -50,7 +50,7 @@ final class ConnectorDriverManager {
         } else {
             jars.addAll(getJarFiles("."));
             jars.addAll(driverFiles);
-            List<URL> urls = new ArrayList<URL>();
+            List<URL> urls = new ArrayList<>();
             for (File file : jars) {
                 try {
                     urls.add(file.toURI().toURL());
@@ -153,7 +153,7 @@ final class ConnectorDriverManager {
         if (files == null) {
             return Collections.emptyList();
         }
-        List<File> jars = new ArrayList<File>();
+        List<File> jars = new ArrayList<>();
         for (File file : files) {
             if (isJarFile(file)) {
                 jars.add(file);

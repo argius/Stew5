@@ -30,7 +30,7 @@ public final class ResourceManager {
     public static ResourceManager getInstance(Object o) {
         Locale loc = Locale.getDefault();
         String[] suffixes = {"_" + loc, "_" + loc.getLanguage(), ""};
-        List<Map<String, String>> a = new ArrayList<Map<String, String>>();
+        List<Map<String, String>> a = new ArrayList<>();
         for (final String name : getResourceNames(o)) {
             for (final String suffix : suffixes) {
                 final String key = name + suffix;
@@ -47,7 +47,7 @@ public final class ResourceManager {
     }
 
     private static Set<String> getResourceNames(Object o) {
-        Set<String> set = new LinkedHashSet<String>();
+        Set<String> set = new LinkedHashSet<>();
         String cn = null;
         String pn = null;
         if (o instanceof String) {
@@ -75,7 +75,7 @@ public final class ResourceManager {
         if (is == null) {
             return null;
         }
-        List<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<>();
         Scanner r = new Scanner(is, encname);
         try {
             StringBuilder buffer = new StringBuilder();
@@ -98,7 +98,7 @@ public final class ResourceManager {
         } finally {
             r.close();
         }
-        Map<String, String> m = new HashMap<String, String>();
+        Map<String, String> m = new HashMap<>();
         for (final String s : lines) {
             if (s.contains("=")) {
                 String[] a = s.split("=", 2);
@@ -219,7 +219,7 @@ public final class ResourceManager {
 
 class ResourceManager0 {
 
-    static final ConcurrentHashMap<String, Map<String, String>> map = new ConcurrentHashMap<String, Map<String, String>>();
+    static final ConcurrentHashMap<String, Map<String, String>> map = new ConcurrentHashMap<>();
 
     static String getPackageName() {
         return ResourceManager0.class.getPackage().getName();

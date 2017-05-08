@@ -122,7 +122,7 @@ final class WindowOutputProcessor extends JFrame implements OutputProcessor, Any
         ResultSetMetaData meta = rs.getMetaData();
         final int columnCount = (needsOrderChange) ? order.size() : meta.getColumnCount();
         final ResultSetTableModel m = new ResultSetTableModel(ref);
-        Vector<Object> v = new Vector<Object>(columnCount);
+        Vector<Object> v = new Vector<>(columnCount);
         ValueTransporter transfer = ValueTransporter.getInstance("");
         final int limit = App.props.getAsInt("rowcount.limit", Integer.MAX_VALUE);
         int rowCount = 0;
@@ -353,7 +353,7 @@ final class WindowOutputProcessor extends JFrame implements OutputProcessor, Any
         Exporter exporter = Exporter.getExporter(file);
         try {
             TableColumnModel columnModel = resultSetTable.getTableHeader().getColumnModel();
-            List<Object> headerValues = new ArrayList<Object>();
+            List<Object> headerValues = new ArrayList<>();
             for (TableColumn column : Collections.list(columnModel.getColumns())) {
                 headerValues.add(column.getHeaderValue());
             }

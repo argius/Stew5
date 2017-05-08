@@ -39,7 +39,7 @@ public final class XmlImporter extends Importer {
 
     @Override
     protected Object[] readHeader() throws IOException {
-        Map<Integer, Object> map = new HashMap<Integer, Object>();
+        Map<Integer, Object> map = new HashMap<>();
         boolean isHeaderRow = false;
         while (true) {
             Matcher m = PATTERN_TAG.matcher(buffer);
@@ -185,7 +185,7 @@ public final class XmlImporter extends Importer {
     }
 
     private Object[] parseRow() throws IOException {
-        List<Object> list = new ArrayList<Object>();
+        List<Object> list = new ArrayList<>();
         while (hasMoreData) {
             Matcher m = PATTERN_TAG.matcher(buffer);
             if (m.find()) {

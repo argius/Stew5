@@ -110,7 +110,7 @@ public final class Export extends Command {
             ColumnOrder order = ref.getOrder();
             boolean needOrderChange = order.size() > 0;
             int columnCount;
-            List<String> header = new ArrayList<String>();
+            List<String> header = new ArrayList<>();
             if (needOrderChange) {
                 columnCount = order.size();
                 for (int i = 0; i < columnCount; i++) {

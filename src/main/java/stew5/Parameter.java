@@ -25,7 +25,7 @@ public final class Parameter {
     }
 
     private static int[] indices(char[] chars) {
-        List<Integer> a = new ArrayList<Integer>();
+        List<Integer> a = new ArrayList<>();
         boolean prev = true;
         boolean quoted = false;
         for (int i = 0; i < chars.length; i++) {

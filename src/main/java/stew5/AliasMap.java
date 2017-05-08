@@ -62,7 +62,7 @@ final class AliasMap {
     }
 
     Set<String> keys() {
-        Set<String> set = new LinkedHashSet<String>();
+        Set<String> set = new LinkedHashSet<>();
         for (final Object o : Collections.list(properties.propertyNames())) {
             set.add((String)o);
         }

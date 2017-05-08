@@ -98,7 +98,7 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
                 refresh((InfoNode)path.getLastPathComponent());
             }
         } else if (ev.isAnyOf(generateWherePhrase)) {
-            List<ColumnNode> columnNodes = new ArrayList<ColumnNode>();
+            List<ColumnNode> columnNodes = new ArrayList<>();
             for (TreeNode node : getSelectionNodes()) {
                 if (node instanceof ColumnNode) {
                     columnNodes.add((ColumnNode)node);
@@ -148,7 +148,7 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
     }
 
     List<TreeNode> getSelectionNodes() {
-        List<TreeNode> a = new ArrayList<TreeNode>();
+        List<TreeNode> a = new ArrayList<>();
         for (TreePath path : getSelectionPaths()) {
             a.add((TreeNode)path.getLastPathComponent());
         }
@@ -165,7 +165,7 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
         if (paths == null || paths.length == 0) {
             return;
         }
-        List<String> names = new ArrayList<String>(paths.length);
+        List<String> names = new ArrayList<>(paths.length);
         for (TreePath path : paths) {
             if (path == null) {
                 continue;
@@ -190,7 +190,7 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
         if (paths == null || paths.length == 0) {
             return;
         }
-        List<String> names = new ArrayList<String>(paths.length);
+        List<String> names = new ArrayList<>(paths.length);
         for (TreePath path : paths) {
             if (path == null) {
                 continue;
@@ -235,7 +235,7 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
         if (nodes.isEmpty()) {
             return "";
         }
-        Set<String> tableNames = new LinkedHashSet<String>();
+        Set<String> tableNames = new LinkedHashSet<>();
         ListMap columnMap = new ListMap();
         for (ColumnNode node : nodes) {
             final String tableName = node.getTableNode().getNodeFullName();
@@ -244,13 +244,13 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
             columnMap.add(columnName, String.format("%s.%s", tableName, columnName));
         }
         assert tableNames.size() >= 1;
-        List<String> expressions = new ArrayList<String>();
+        List<String> expressions = new ArrayList<>();
         if (tableNames.size() == 1) {
             for (ColumnNode node : nodes) {
                 expressions.add(String.format("%s=?", node.getName()));
             }
         } else { // size >= 2
-            List<String> expressions2 = new ArrayList<String>();
+            List<String> expressions2 = new ArrayList<>();
             for (Entry<String, List<String>> entry : columnMap.entrySet()) {
                 List<String> a = entry.getValue();
                 final int n = a.size();
@@ -270,7 +270,7 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
     }
 
     static String generateSelectPhrase(List<TreeNode> nodes) {
-        Set<String> tableNames = new LinkedHashSet<String>();
+        Set<String> tableNames = new LinkedHashSet<>();
         ListMap columnMap = new ListMap();
         for (TreeNode node : nodes) {
             if (node instanceof TableNode) {
@@ -287,9 +287,9 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
         if (tableNames.isEmpty()) {
             return "";
         }
-        List<String> columnNames = new ArrayList<String>();
+        List<String> columnNames = new ArrayList<>();
         if (tableNames.size() == 1) {
-            List<String> a = new ArrayList<String>();
+            List<String> a = new ArrayList<>();
             for (TreeNode node : nodes) {
                 if (node instanceof ColumnNode) {
                     ColumnNode cn = (ColumnNode)node;
@@ -315,7 +315,7 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
     }
 
     static String generateUpdateOrInsertPhrase(List<TreeNode> nodes, boolean isInsert) {
-        Set<String> tableNames = new LinkedHashSet<String>();
+        Set<String> tableNames = new LinkedHashSet<>();
         ListMap columnMap = new ListMap();
         for (TreeNode node : nodes) {
             if (node instanceof TableNode) {
@@ -339,7 +339,7 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
         List<String> columnsInTable = columnMap.get(tableName);
         if (columnsInTable.isEmpty()) {
             if (isInsert) {
-                List<TableNode> tableNodes = new ArrayList<TableNode>();
+                List<TableNode> tableNodes = new ArrayList<>();
                 for (TreeNode node : nodes) {
                     if (node instanceof TableNode) {
                         tableNodes.add((TableNode)node);
@@ -366,7 +366,7 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
                                    join(",", columnsInTable),
                                    join(",", nCopies(columnCount, "?")));
         } else {
-            List<String> columnExpressions = new ArrayList<String>();
+            List<String> columnExpressions = new ArrayList<>();
             for (final String columnName : columnsInTable) {
                 columnExpressions.add(columnName + "=?");
             }
@@ -458,7 +458,7 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
         setSelectionModel(m);
         // initializing nodes
         final DatabaseMetaData dbmeta = env.getCurrentConnection().getMetaData();
-        final Set<InfoNode> createdStatusSet = new HashSet<InfoNode>();
+        final Set<InfoNode> createdStatusSet = new HashSet<>();
         expandNode(connectorNode, dbmeta);
         createdStatusSet.add(connectorNode);
         // events
@@ -593,7 +593,7 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
                 invokeLater(new Task1());
                 final List<InfoNode> children;
                 try {
-                    children = new ArrayList<InfoNode>(parent.createChildren(dbmeta));
+                    children = new ArrayList<>(parent.createChildren(dbmeta));
                 } catch (SQLException ex) {
                     try {
                         if (dbmeta.getConnection().isClosed())
@@ -711,7 +711,7 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
         static List<TableTypeNode> getTableTypeNodes(DatabaseMetaData dbmeta,
                                                      String catalog,
                                                      String schema) throws SQLException {
-            List<String> tableTypes = new ArrayList<String>(DEFAULT_TABLE_TYPES);
+            List<String> tableTypes = new ArrayList<>(DEFAULT_TABLE_TYPES);
             try {
                 ResultSet rs = dbmeta.getTableTypes();
                 try {
@@ -727,7 +727,7 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
             } catch (SQLException ex) {
                 log.warn("getTableTypes at getTableTypeNodes", ex);
             }
-            List<TableTypeNode> a = new ArrayList<TableTypeNode>();
+            List<TableTypeNode> a = new ArrayList<>();
             for (final String tableType : tableTypes) {
                 TableTypeNode typeNode = new TableTypeNode(catalog, schema, tableType);
                 if (typeNode.hasItems(dbmeta)) {
@@ -747,7 +747,7 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
 
         @Override
         protected List<InfoNode> createChildren(DatabaseMetaData dbmeta) throws SQLException {
-            List<InfoNode> a = new ArrayList<InfoNode>();
+            List<InfoNode> a = new ArrayList<>();
             if (dbmeta.supportsCatalogsInDataManipulation()) {
                 ResultSet rs = dbmeta.getCatalogs();
                 try {
@@ -785,7 +785,7 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
 
         @Override
         protected List<InfoNode> createChildren(DatabaseMetaData dbmeta) throws SQLException {
-            List<InfoNode> a = new ArrayList<InfoNode>();
+            List<InfoNode> a = new ArrayList<>();
             if (dbmeta.supportsSchemasInDataManipulation()) {
                 ResultSet rs = dbmeta.getSchemas();
                 try {
@@ -816,7 +816,7 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
 
         @Override
         protected List<InfoNode> createChildren(DatabaseMetaData dbmeta) throws SQLException {
-            List<InfoNode> a = new ArrayList<InfoNode>();
+            List<InfoNode> a = new ArrayList<>();
             a.addAll(getTableTypeNodes(dbmeta, catalog, schema));
             return a;
         }
@@ -840,7 +840,7 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
 
         @Override
         protected List<InfoNode> createChildren(DatabaseMetaData dbmeta) throws SQLException {
-            List<InfoNode> a = new ArrayList<InfoNode>();
+            List<InfoNode> a = new ArrayList<>();
             ResultSet rs = dbmeta.getTables(catalog, schema, null, new String[]{tableType});
             try {
                 while (rs.next()) {
@@ -891,7 +891,7 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
 
         @Override
         protected List<InfoNode> createChildren(DatabaseMetaData dbmeta) throws SQLException {
-            List<InfoNode> a = new ArrayList<InfoNode>();
+            List<InfoNode> a = new ArrayList<>();
             ResultSet rs = dbmeta.getColumns(catalog, schema, name, null);
             try {
                 while (rs.next()) {
@@ -913,7 +913,7 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
 
         @Override
         protected String getNodeFullName() {
-            List<String> a = new ArrayList<String>();
+            List<String> a = new ArrayList<>();
             if (catalog != null) {
                 a.add(catalog);
             }

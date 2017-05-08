@@ -27,7 +27,7 @@ final class ConnectorEntry {
      * @return
      */
     static List<ConnectorEntry> toList(Iterable<Connector> iterable) {
-        List<ConnectorEntry> a = new ArrayList<ConnectorEntry>();
+        List<ConnectorEntry> a = new ArrayList<>();
         for (Connector c : iterable) {
             a.add(new ConnectorEntry(c.getId(), c));
         }

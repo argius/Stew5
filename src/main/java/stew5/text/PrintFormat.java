@@ -17,7 +17,7 @@ public final class PrintFormat {
      * @return
      */
     public static String format(String format, Object... args) {
-        List<Object> a = new ArrayList<Object>();
+        List<Object> a = new ArrayList<>();
         for (Object arg : args) {
             final Object o;
             if (arg == null || arg instanceof CharSequence) {

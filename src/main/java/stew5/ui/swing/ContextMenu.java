@@ -54,7 +54,7 @@ final class ContextMenu {
     }
 
     private static Map<String, KeyStroke> extractKeyBinds(JComponent c) {
-        Map<String, KeyStroke> m = new HashMap<String, KeyStroke>();
+        Map<String, KeyStroke> m = new HashMap<>();
         if (c != null) {
             InputMap imap = c.getInputMap();
             if (imap != null) {
@@ -100,7 +100,7 @@ final class ContextMenu {
         TextPopupMenuListener(JTextComponent c, UndoManager um) {
             this.text = c;
             this.um = um;
-            this.itemMap = new HashMap<String, JMenuItem>();
+            this.itemMap = new HashMap<>();
         }
 
         @Override

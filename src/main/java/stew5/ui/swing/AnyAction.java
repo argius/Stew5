@@ -46,7 +46,7 @@ final class AnyAction extends AbstractAction implements Runnable {
             throw new IllegalArgumentException("eventCommand is null");
         }
         this.o = o;
-        this.m = new LinkedHashMap<String, Method>();
+        this.m = new LinkedHashMap<>();
         this.eventCommand = eventCommand;
         this.canListenAnyAction = (o instanceof AnyActionListener);
         this.hasInputMap = (o instanceof JComponent);

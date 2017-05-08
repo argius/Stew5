@@ -48,7 +48,7 @@ final class ConnectorEditDialog extends JDialog implements AnyActionListener {
         // [Init Instances]
         super(owner);
         this.connector = connector;
-        this.listenerList = new ArrayList<ChangeListener>();
+        this.listenerList = new ArrayList<>();
         setTitle(res.get("title"));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         // [Init Components]

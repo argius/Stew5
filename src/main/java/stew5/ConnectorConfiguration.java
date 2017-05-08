@@ -48,7 +48,7 @@ public final class ConnectorConfiguration {
         bos.flush();
         byte[] data = bos.toByteArray();
         // create ID list
-        List<String> idList = new ArrayList<String>();
+        List<String> idList = new ArrayList<>();
         Scanner scanner = new Scanner(new ByteArrayInputStream(data));
         try {
             while (scanner.hasNextLine()) {
@@ -97,7 +97,7 @@ public final class ConnectorConfiguration {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         map.toProperties().store(bos, "");
         // lines to elements
-        List<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<>();
         Scanner scanner = new Scanner(new ByteArrayInputStream(bos.toByteArray()));
         try {
             while (scanner.hasNextLine()) {
@@ -110,7 +110,7 @@ public final class ConnectorConfiguration {
             scanner.close();
         }
         // rewrites records sorted by ID
-        Comparator<String> c = new ConnectorPropertyComparator(new ArrayList<String>(map.keySet()));
+        Comparator<String> c = new ConnectorPropertyComparator(new ArrayList<>(map.keySet()));
         Collections.sort(lines, c);
         PrintWriter out = new PrintWriter(os);
         try {

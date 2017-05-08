@@ -92,7 +92,7 @@ public class Load extends Command {
             }
             final List<Object> headerList = Arrays.asList(header);
             final String columns = (hasHeader) ? String.format("(%s)", join(",", headerList)) : "";
-            final List<Object> valueList = new ArrayList<Object>(headerList);
+            final List<Object> valueList = new ArrayList<>(headerList);
             Collections.fill(valueList, "?");
             final String sql = String.format("INSERT INTO %s %s VALUES (%s)",
                                              tableName,

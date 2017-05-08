@@ -248,9 +248,9 @@ final class ResultSetTable extends JTable implements AnyActionListener, TextSear
             final String cmd = ev.getActionCommand();
             getActionMap().get(cmd).actionPerformed(new ActionEvent(this, 0, cmd));
         } else if (ev.isAnyOf(copyWithEscape)) {
-            List<String> rows = new ArrayList<String>();
+            List<String> rows = new ArrayList<>();
             for (int rowIndex : getSelectedRows()) {
-                List<Object> row = new ArrayList<Object>();
+                List<Object> row = new ArrayList<>();
                 for (int columnIndex : getSelectedColumns()) {
                     final Object o = getValueAt(rowIndex, columnIndex);
                     row.add(CsvFormatter.AUTO.format(o == null ? "" : String.valueOf(o)));
@@ -293,7 +293,7 @@ final class ResultSetTable extends JTable implements AnyActionListener, TextSear
                 editingCanceled(new ChangeEvent(ev.getSource()));
             }
         } else if (ev.isAnyOf(copyColumnName)) {
-            List<String> a = new ArrayList<String>();
+            List<String> a = new ArrayList<>();
             ResultSetTableModel m = getResultSetTableModel();
             if (ev.getModifiers() == 0) {
                 for (int i = 0, n = m.getColumnCount(); i < n; i++) {

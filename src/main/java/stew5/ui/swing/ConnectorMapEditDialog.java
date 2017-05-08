@@ -29,7 +29,7 @@ final class ConnectorMapEditDialog extends JDialog implements ChangeListener, An
         super(owner);
         final DefaultListModel<ConnectorEntry> listModel = new DefaultListModel<>();
         this.connectorMap = new ConnectorMap(env.getConnectorMap());
-        this.idList = new JList<ConnectorEntry>(listModel);
+        this.idList = new JList<>(listModel);
         this.listModel = listModel;
         setTitle(res.get("title"));
         setResizable(false);
