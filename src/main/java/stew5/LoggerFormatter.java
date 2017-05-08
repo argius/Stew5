@@ -1,5 +1,6 @@
 package stew5;
 
+import java.io.*;
 import java.text.*;
 import java.util.logging.*;
 
@@ -18,7 +19,19 @@ public final class LoggerFormatter extends Formatter {
 
     @Override
     public String format(LogRecord record) {
-        final String msg = MessageFormat.format(record.getMessage(), record.getParameters());
+        String stackTraceString;
+        Throwable th = record.getThrown();
+        if (th == null) {
+            stackTraceString = "";
+        } else {
+            StringWriter sw = new StringWriter();
+            PrintWriter out = new PrintWriter(sw);
+            out.println();
+            record.getThrown().printStackTrace(out);
+            out.close();
+            stackTraceString = sw.toString();
+        }
+        final String msg = MessageFormat.format(record.getMessage(), record.getParameters()) + stackTraceString;
         return String.format(format,
                              record.getMillis(),
                              record.getLevel().getName(),
