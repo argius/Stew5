@@ -10,16 +10,16 @@ import java.awt.*;
 import java.awt.event.*;
 import java.beans.*;
 import java.io.*;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
-import javax.swing.text.JTextComponent;
-import stew5.Logger;
+import javax.swing.text.*;
+import org.apache.commons.csv.*;
+import stew5.*;
 import stew5.io.*;
-import stew5.text.TextUtilities;
 
 /**
  * Table for Result Set.
@@ -43,6 +43,7 @@ final class ResultSetTable extends JTable implements AnyActionListener, TextSear
     }
 
     static final String TAB = "\t";
+    static final char TAB_CHAR = '\t';
 
     private static final Logger log = Logger.getLogger(ResultSetTable.class);
     private static final TableCellRenderer nullRenderer = new NullValueRenderer();
@@ -252,17 +253,15 @@ final class ResultSetTable extends JTable implements AnyActionListener, TextSear
             for (int rowIndex : getSelectedRows()) {
                 List<Object> row = new ArrayList<>();
                 for (int columnIndex : getSelectedColumns()) {
-                    final Object o = getValueAt(rowIndex, columnIndex);
-                    row.add(CsvFormatter.AUTO.format(o == null ? "" : String.valueOf(o)));
+                    row.add(getValueAt(rowIndex, columnIndex));
                 }
-                rows.add(TextUtilities.join(TAB, row));
+                rows.add(toTsv(row.toArray()));
             }
             ClipboardHelper.setStrings(rows);
         } else if (ev.isAnyOf(paste)) {
             try {
                 InputStream is = new ByteArrayInputStream(ClipboardHelper.getString().getBytes());
-                Importer importer = new SmartImporter(is, TAB);
-                try {
+                try (Importer importer = new CsvImporter(is, TAB_CHAR)) {
                     int[] selectedColumns = getSelectedColumns();
                     for (int rowIndex : getSelectedRows()) {
                         Object[] values = importer.nextRow();
@@ -271,8 +270,6 @@ final class ResultSetTable extends JTable implements AnyActionListener, TextSear
                             setValueAt(values[x], rowIndex, selectedColumns[x]);
                         }
                     }
-                } finally {
-                    importer.close();
                 }
                 repaint();
             } finally {
@@ -304,7 +301,7 @@ final class ResultSetTable extends JTable implements AnyActionListener, TextSear
                     a.add(m.getColumnName(i));
                 }
             }
-            ClipboardHelper.setString(TextUtilities.join(TAB, a));
+            ClipboardHelper.setString(toTsv(a.toArray()));
         } else if (ev.isAnyOf(findColumnName)) {
             anyActionListener.anyActionPerformed(ev);
         } else if (ev.isAnyOf(addEmptyRow)) {
@@ -320,8 +317,7 @@ final class ResultSetTable extends JTable implements AnyActionListener, TextSear
             }
         } else if (ev.isAnyOf(insertFromClipboard)) {
             try {
-                Importer importer = new SmartImporter(ClipboardHelper.getReaderForText(), TAB);
-                try {
+                try (Importer importer = new CsvImporter(ClipboardHelper.getReaderForText(), TAB_CHAR)) {
                     ResultSetTableModel m = getResultSetTableModel();
                     while (true) {
                         Object[] row = importer.nextRow();
@@ -332,8 +328,6 @@ final class ResultSetTable extends JTable implements AnyActionListener, TextSear
                         m.linkRow(m.getRowCount() - 1);
                     }
                     repaintRowHeader("model");
-                } finally {
-                    importer.close();
                 }
             } finally {
                 editingCanceled(new ChangeEvent(ev.getSource()));
@@ -394,6 +388,10 @@ final class ResultSetTable extends JTable implements AnyActionListener, TextSear
         } else {
             log.warn("not expected: Event=%s", ev);
         }
+    }
+
+    static String toTsv(Object... a) {
+        return CSVFormat.DEFAULT.withDelimiter(TAB_CHAR).format(a);
     }
 
     @Override
@@ -589,8 +587,7 @@ final class ResultSetTable extends JTable implements AnyActionListener, TextSear
     private void bindJumpAction(String suffix, int key, boolean withSelect) {
         final String actionKey = String.format("%s-to-%s", (withSelect) ? "select" : "jump", suffix);
         final CellCursor c = new CellCursor(this, withSelect);
-        final int modifiers = Utilities.getMenuShortcutKeyMask()
-                              | (withSelect ? SHIFT_DOWN_MASK : 0);
+        final int modifiers = Utilities.getMenuShortcutKeyMask() | (withSelect ? SHIFT_DOWN_MASK : 0);
         KeyStroke[] keyStrokes = {getKeyStroke(key, modifiers)};
         c.putValue(Action.ACTION_COMMAND_KEY, actionKey);
         InputMap im = this.getInputMap();
@@ -675,12 +672,7 @@ final class ResultSetTable extends JTable implements AnyActionListener, TextSear
                                                        boolean hasFocus,
                                                        int row,
                                                        int column) {
-            Component c = super.getTableCellRendererComponent(table,
-                                                              "NULL",
-                                                              isSelected,
-                                                              hasFocus,
-                                                              row,
-                                                              column);
+            Component c = super.getTableCellRendererComponent(table, "NULL", isSelected, hasFocus, row, column);
             c.setForeground(new Color(63, 63, 192, 192));
             Font font = c.getFont();
             c.setFont(font.deriveFont(font.getSize() * 0.8f));
@@ -707,12 +699,7 @@ final class ResultSetTable extends JTable implements AnyActionListener, TextSear
                                                        int row,
                                                        int column) {
             Object o = fixesColumnNumber ? String.format("%d %s", column + 1, value) : value;
-            return renderer.getTableCellRendererComponent(table,
-                                                          o,
-                                                          isSelected,
-                                                          hasFocus,
-                                                          row,
-                                                          column);
+            return renderer.getTableCellRendererComponent(table, o, isSelected, hasFocus, row, column);
         }
 
     }
@@ -992,8 +979,7 @@ final class ResultSetTable extends JTable implements AnyActionListener, TextSear
             }
             if (byValue) {
                 for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-                    TableCellRenderer renderer = getCellRenderer(rowIndex,
-                                                                                columnIndex);
+                    TableCellRenderer renderer = getCellRenderer(rowIndex, columnIndex);
                     if (renderer == null) {
                         continue;
                     }
@@ -1037,6 +1023,5 @@ final class ResultSetTable extends JTable implements AnyActionListener, TextSear
             column.setPreferredWidth((int)(column.getWidth() * rate));
         }
     }
-
 
 }
