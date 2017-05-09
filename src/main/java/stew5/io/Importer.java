@@ -5,7 +5,7 @@ import java.io.*;
 /**
  * A basic implementation of Importer.
  */
-public abstract class Importer {
+public abstract class Importer implements AutoCloseable {
 
     protected InputStream is;
     protected boolean wasReadHeader;
@@ -57,6 +57,7 @@ public abstract class Importer {
      * Closes this stream.
      * @throws IOException
      */
+    @Override
     public void close() throws IOException {
         ensureOpen();
         if (is != null) {

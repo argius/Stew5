@@ -5,7 +5,7 @@ import java.io.*;
 /**
  * A basic implementation of Exporter.
  */
-public abstract class Exporter {
+public abstract class Exporter implements AutoCloseable {
 
     protected OutputStream os;
     protected boolean wasWrittenHeader;
@@ -60,6 +60,7 @@ public abstract class Exporter {
      * Closes stream.
      * @throws IOException
      */
+    @Override
     public void close() throws IOException {
         ensureOpen();
         if (os != null) {
