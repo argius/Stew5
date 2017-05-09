@@ -6,11 +6,12 @@ import static javax.swing.ScrollPaneConstants.*;
 import static stew5.ui.swing.ConnectorMapEditDialog.ActionKey.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.IOException;
+import java.io.*;
 import java.util.Properties;
 import javax.swing.*;
 import javax.swing.event.*;
 import stew5.*;
+import stew5.io.*;
 
 final class ConnectorMapEditDialog extends JDialog implements ChangeListener, AnyActionListener {
 
@@ -236,6 +237,20 @@ final class ConnectorMapEditDialog extends JDialog implements ChangeListener, An
         if (withSaving) {
             if (showConfirmDialog(this, res.get("i.confirm-save"), "", YES_NO_OPTION) != YES_OPTION) {
                 return;
+            }
+            File systemDirectory = App.getSystemDirectory();
+            if (!systemDirectory.exists()) {
+                String msg = res.get("i.confirm.makesystemdir", systemDirectory);
+                if (showConfirmDialog(this, msg, "", YES_NO_OPTION) == OK_OPTION) {
+                    try {
+                        FileUtilities.makeDirectory(systemDirectory);
+                    } catch (IOException ex) {
+                        WindowOutputProcessor.showErrorDialog(this, ex);
+                    }
+                }
+                if (!systemDirectory.exists()) {
+                    return;
+                }
             }
             ConnectorMap m = new ConnectorMap();
             for (Object o : listModel.toArray()) {

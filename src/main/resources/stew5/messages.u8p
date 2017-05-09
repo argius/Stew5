@@ -2,6 +2,7 @@
 .about=Stew - SQL Tool Environment With JDBC \nversion: {0}
 
 i.committed=Commited.
+i.confirm.makesystemdir=System directory [{0}] does not exists. Is it OK to create directory?
 i.connected=Connected.
 i.deleted=Deleted {0} records.
 i.directory-changed=The current directory was changed [{0}] to [{1}].

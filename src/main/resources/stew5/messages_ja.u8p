@@ -2,6 +2,7 @@
 .about=Stew - SQL Tool Environment With JDBC \nversion: {0}
 
 i.committed=コミットされました。
+i.confirm.makesystemdir=システムディレクトリ[{0}]は存在しません。作成しますか？
 i.connected=接続されました。
 i.deleted={0} 件 削除されました。
 i.directory-changed=カレントディレクトリを[{0}]から[{1}]へ移動しました。

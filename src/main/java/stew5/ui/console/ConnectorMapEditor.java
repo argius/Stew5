@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.Map.Entry;
 import java.util.*;
 import stew5.*;
+import stew5.io.*;
 
 /**
  * The Connector Editor for console mode.
@@ -177,6 +178,15 @@ public final class ConnectorMapEditor {
         if (map.equals(oldContent)) {
             printMessage("proc.nomodification");
         } else if (confirmYes("proc.save.confirm")) {
+            File systemDirectory = App.getSystemDirectory();
+            if (!systemDirectory.exists()) {
+                if (confirmYes(res.get("i.confirm.makesystemdir", systemDirectory))) {
+                    FileUtilities.makeDirectory(systemDirectory);
+                } else {
+                    printMessage("proc.save.canceled");
+                    return;
+                }
+            }
             ConnectorConfiguration.save(map);
             oldContent = new ConnectorMap(map);
             printMessage("proc.save.finished");

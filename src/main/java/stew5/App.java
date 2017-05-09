@@ -17,39 +17,29 @@ public final class App {
     private static final File dir = initializeDirectory();
     public static final LayeredProperties props = initializeProperties();
 
-    private static final String PropKey = "net.argius.stew.properties";
     private static final String PropFileName = "stew.properties";
-    private static final String DefaultDir = ".stew";
 
     private App() { // empty
     }
 
     private static File initializeDirectory() {
-        File directory;
-        String path = System.getProperty(PropKey, System.getProperty(PropFileName, ""));
-        if (path.length() == 0) {
-            directory = new File(DefaultDir);
-        } else {
-            File file = new File(path);
-            if (file.isDirectory()) {
-                directory = file;
-            } else {
-                directory = file.getParentFile();
-                if (directory == null) {
-                    directory = new File(DefaultDir);
-                }
+        LayeredProperties tmpProps = new LayeredProperties(System.getenv(), System.getProperties());
+        String s = tmpProps.get("home", "");
+        if (s.isEmpty()) {
+            s = System.getenv("HOME");
+            if (s == null || s.isEmpty()) {
+                s = System.getProperty("user.home");
             }
         }
+        log.debug("HOMEDIR=[%s]", s);
+        File homeDir = new File(s);
         try {
-            if (!directory.isDirectory()) {
-                if (!directory.mkdirs() || !directory.isDirectory()) {
-                    throw new IOException("can't make directory: " + directory);
-                }
-            }
-        } catch (IOException ex) {
-            throw new IllegalStateException(ex);
+            File canonicalFile = homeDir.getCanonicalFile().getAbsoluteFile();
+            log.info("HOMEDIR(canonical path)=[%s]", canonicalFile);
+            return new File(canonicalFile, ".stew");
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
         }
-        return directory;
     }
 
     private static LayeredProperties initializeProperties() {
