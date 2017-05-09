@@ -1,15 +1,12 @@
-package stew5;
+package net.argius.stew;
 
 import java.io.*;
-
 import javax.crypto.*;
 
 /**
  * A skeletal implementation of the Password interface using ciphers.
  */
 public abstract class CipherPassword implements Password {
-
-    private static final Logger log = Logger.getLogger(CipherPassword.class);
 
     private static String secretKey = "";
 
@@ -69,10 +66,13 @@ public abstract class CipherPassword implements Password {
             Cipher cipher = getCipherInstance(secretKey, Cipher.ENCRYPT_MODE);
             byte[] encrypted = cipher.doFinal(rowString.getBytes());
             return toHexString(encrypted);
+        } catch (BadPaddingException | IllegalBlockSizeException ex) {
+            // FIXME reconsider handling
+            System.err.println(ex);
         } catch (Exception ex) {
-            log.warn(ex);
-            return "";
+            System.err.println(ex);
         }
+        return "";
     }
 
     /**
@@ -85,10 +85,13 @@ public abstract class CipherPassword implements Password {
             Cipher cipher = getCipherInstance(secretKey, Cipher.DECRYPT_MODE);
             byte[] decrypted = cipher.doFinal(toBytes(cryptedString));
             return new String(decrypted);
+        } catch (BadPaddingException | IllegalBlockSizeException ex) {
+            // FIXME reconsider handling
+            System.err.println(ex);
         } catch (Exception ex) {
-            log.warn(ex);
-            return "";
+            System.err.println(ex);
         }
+        return "";
     }
 
     private static String toHexString(byte[] bytes) {

@@ -21,6 +21,7 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.table.JTableHeader;
 import javax.swing.text.JTextComponent;
+import net.argius.stew.*;
 import stew5.*;
 import stew5.ui.*;
 

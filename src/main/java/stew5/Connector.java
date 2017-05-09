@@ -2,6 +2,7 @@ package stew5;
 
 import java.sql.*;
 import java.util.*;
+import net.argius.stew.*;
 
 /**
  * This class provides functions to manage database connections in this application. 

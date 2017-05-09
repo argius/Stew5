@@ -15,6 +15,7 @@ import java.util.zip.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.DefaultTableModel;
+import net.argius.stew.*;
 import stew5.*;
 
 final class ConnectorEditDialog extends JDialog implements AnyActionListener {

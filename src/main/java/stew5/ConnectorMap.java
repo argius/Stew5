@@ -1,6 +1,7 @@
 package stew5;
 
 import java.util.*;
+import net.argius.stew.*;
 
 /**
  * ConnectorMap provides a mapping to associate an Connector with its own ID. 
