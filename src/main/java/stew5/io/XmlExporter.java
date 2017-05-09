@@ -10,11 +10,7 @@ public final class XmlExporter extends Exporter {
 
     private static final String ENCODING = "utf-8";
     private static final String TAG_TABLE = "table";
-    private static final String TAG_TABLE_START = "<"
-                                                  + TAG_TABLE
-                                                  + " writer=\""
-                                                  + XmlExporter.class.getName()
-                                                  + "\">";
+    private static final String TAG_TABLE_START = "<" + TAG_TABLE + " writer=\"" + XmlExporter.class.getName() + "\">";
     private static final String TAG_TABLE_END = "</" + TAG_TABLE + ">";
     private static final String TAG_HEADERROW = "headerrow";
     private static final String TAG_HEADERROW_END = "</" + TAG_HEADERROW + ">";
@@ -30,7 +26,7 @@ public final class XmlExporter extends Exporter {
 
     /**
      * An constructor.
-     * @param outputStream 
+     * @param outputStream
      */
     public XmlExporter(OutputStream outputStream) {
         super(outputStream);
@@ -48,11 +44,9 @@ public final class XmlExporter extends Exporter {
     protected void writeHeader(Object[] header) throws IOException {
         ensureOpen();
         out.println(TAG_HEADERROW_START);
+        final String fmt = TAG_HEADER_START + " index=\"%d\">%s" + TAG_HEADER_END + "%n";
         for (int i = 0; i < header.length; i++) {
-            Object o = header[i];
-            out.printf(TAG_HEADER_START + " index=\"%d\">%s" + TAG_HEADER_END + "%n",
-                       i,
-                       convertCData(String.valueOf(o)));
+            out.printf(fmt, i, convertCData(String.valueOf(header[i])));
         }
         out.println(TAG_HEADERROW_END);
         out.flush();
