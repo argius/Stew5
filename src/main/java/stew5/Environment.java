@@ -262,7 +262,7 @@ public final class Environment {
      * @return system directory
      * @deprecated use Bootstrap.getSystemDirectory() instead
      */
-    @Deprecated
+    @Deprecated // TODO Remove this, scheduled for 5.0.0-beta3
     public File getSystemDirectory() {
         return App.getSystemDirectory();
     }

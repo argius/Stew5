@@ -90,7 +90,7 @@ public final class App {
      * @param key
      * @return
      */
-    @Deprecated
+    @Deprecated // TODO Remove this, scheduled for 5.0.0-beta3
     public static String getProperty(String key) {
         return props.get(key.replace("net.argius.stew.", ""), "");
     }
@@ -101,7 +101,7 @@ public final class App {
      * @param defaultValue
      * @return
      */
-    @Deprecated
+    @Deprecated // TODO Remove this, scheduled for 5.0.0-beta3
     public static String getProperty(String key, String defaultValue) {
         return props.get(key.replace("net.argius.stew.", defaultValue));
     }
@@ -112,7 +112,7 @@ public final class App {
      * @param defaultValue
      * @return
      */
-    @Deprecated
+    @Deprecated // TODO Remove this, scheduled for 5.0.0-beta3
     public static int getPropertyAsInt(String key, int defaultValue) {
         return props.getAsInt(key.replace("net.argius.stew.", ""), defaultValue);
     }
@@ -122,7 +122,7 @@ public final class App {
      * @param key
      * @return
      */
-    @Deprecated
+    @Deprecated // TODO Remove this, scheduled for 5.0.0-beta3
     public static boolean getPropertyAsBoolean(String key) {
         return props.getAsBoolean(key.replace("net.argius.stew.", ""));
     }
@@ -132,7 +132,7 @@ public final class App {
      * @param key
      * @return
      */
-    @Deprecated
+    @Deprecated // TODO Remove this, scheduled for 5.0.0-beta3
     public static boolean hasProperty(String key) {
         return props.hasKey(key.replace("net.argius.stew.", ""));
     }
