@@ -15,7 +15,7 @@ dependencies {
     testCompile 'com.h2database:h2:1.4.191'
 }
 
-version = '5.0.0-beta2-SNAPSHOT'
+version = '5.0.0-beta2'
 
 sourceCompatibility = '1.7'
 targetCompatibility = '1.7'
