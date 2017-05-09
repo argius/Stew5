@@ -3,6 +3,7 @@ package stew5.io;
 /**
  * CSV Formatter.
  */
+@Deprecated // TODO Remove this, scheduled for 5.0.0-beta3
 public final class CsvFormatter {
 
     /**

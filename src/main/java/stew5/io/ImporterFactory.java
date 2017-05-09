@@ -22,9 +22,9 @@ final class ImporterFactory {
         if (ext.equalsIgnoreCase("xml")) {
             return new XmlImporter(openFile(file));
         } else if (ext.equalsIgnoreCase("csv")) {
-            return new SmartImporter(openFile(file), ",");
+            return new CsvImporter(openFile(file));
         } else {
-            return new SmartImporter(openFile(file), "\t");
+            return new CsvImporter(openFile(file), '\t');
         }
     }
 

@@ -4,8 +4,9 @@ import java.io.*;
 import java.util.*;
 
 /**
- * An implementation of Importer  smart () 
+ * An implementation of Importer  smart ()
  */
+@Deprecated // TODO Remove this, scheduled for 5.0.0-beta3
 public final class SmartImporter extends Importer {
 
     private final String separator;

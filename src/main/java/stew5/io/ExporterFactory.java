@@ -24,9 +24,9 @@ final class ExporterFactory {
         } else if (ext.equalsIgnoreCase("htm") || ext.equalsIgnoreCase("html")) {
             return new HtmlExporter(openFile(file), "");
         } else if (ext.equalsIgnoreCase("csv")) {
-            return new SimpleExporter(openFile(file), ",");
+            return new CsvExporter(openFile(file));
         } else {
-            return new SimpleExporter(openFile(file), "\t");
+            return new CsvExporter(openFile(file), '\t');
         }
     }
 
