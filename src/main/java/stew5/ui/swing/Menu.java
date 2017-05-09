@@ -17,6 +17,7 @@ import stew5.*;
 final class Menu extends JMenuBar implements PropertyChangeListener {
 
     private static final ResourceManager res = ResourceManager.getInstance(Menu.class);
+    private static final boolean autoMnemonic = checkAutoMnemonicIsAvailable();
 
     /**
      * Menu Items.
@@ -205,7 +206,6 @@ final class Menu extends JMenuBar implements PropertyChangeListener {
     private static JMenu createJMenu(ResourceManager rm, String groupId) {
         final String key = (rm.containsKey("group." + groupId) ? "group" : "item") + '.' + groupId;
         final char mn = rm.getChar(key + ".mnemonic");
-        final boolean autoMnemonic = rm.getInt("auto-mnemonic") == 1;
         final String groupString = rm.get(key) + (autoMnemonic ? "(" + mn + ")" : "");
         JMenu group = new JMenu(groupString);
         group.setMnemonic(mn);
@@ -264,7 +264,6 @@ final class Menu extends JMenuBar implements PropertyChangeListener {
     }
 
     static JMenuItem createJMenuItem(ResourceManager rm, String itemId) {
-        final boolean autoMnemonic = rm.getInt("auto-mnemonic") == 1;
         final String itemKey = "item." + itemId;
         final char mn = rm.getChar(itemKey + ".mnemonic");
         final String shortcutKey = itemKey + ".shortcut";
@@ -299,6 +298,10 @@ final class Menu extends JMenuBar implements PropertyChangeListener {
         o.setIcon(getImageIcon(String.format("menu-%s.png", itemId)));
         o.setDisabledIcon(getImageIcon(String.format("menu-disabled-%s.png", itemId)));
         return o;
+    }
+
+    private static boolean checkAutoMnemonicIsAvailable() {
+        return !App.props.getAsBoolean("ui.suppressGenerateMnemonic") && res.getInt("auto-mnemonic") == 1;
     }
 
 }
