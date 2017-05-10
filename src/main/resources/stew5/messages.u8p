@@ -18,6 +18,8 @@ i.rollbacked=Rollbacked.
 i.script-context-initialized=Script Context was initialized.
 i.selected=Selected {0} records.
 i.updated=Updated {0} records.
+i.usagePrefix=usage:
+i.usage.syntax=\ stew5 [options] command
 w.auto-commit-not-available=Warning: Auto-commit mode is not available.
 w.connection-closed-abnormally=Warning: Connection was closed abnormally.
 w.error-occurred-on-auto-rollback=Warning: An error occurred when auto-rollback. ({0})
@@ -38,3 +40,12 @@ e.readonly=Error: Connector is read-only.
 e.runtime=Runtime Error: {0}
 e.unsupported=[{0}] is unsupported.
 e.usage=Usage: {0} {1}
+
+opt.connect=Connect DB at beginning app
+opt.cui=Start app with CUI mode
+opt.gui=Start app with CUI mode
+opt.help=Show help
+opt.version=Show app version
+
+help.header=Options:
+help.footer=See https://github.com/argius/Stew5/wiki for further information.

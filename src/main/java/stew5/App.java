@@ -149,6 +149,10 @@ public final class App {
             System.out.println("Stew " + App.getVersion());
             return;
         }
+        if (opts.isHelp()) {
+            OptionSet.showHelp();
+            return;
+        }
         if (guiCount == 0 && cuiCount == 0) {
             for (String k : new String[]{"bootstrap", "boot",}) {
                 final String v = props.get(k, "");

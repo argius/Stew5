@@ -28,6 +28,16 @@ public final class OptionSet {
         return new Parser();
     }
 
+    public static void showHelp() {
+        final String eol = String.format("%n");
+        HelpFormatter hf = new HelpFormatter();
+        hf.setSyntaxPrefix(res.get("i.usagePrefix"));
+        String syntax = res.get("i.usage.syntax");
+        String header = eol + res.get("help.header");
+        String footer = eol + res.get("help.footer");
+        hf.printHelp(80, syntax, header, newParser().getOptions(), footer, false);
+    }
+
     public boolean isCui() {
         return cui;
     }

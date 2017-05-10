@@ -17,6 +17,7 @@ i.rollbacked=ロールバックされました。
 i.script-context-initialized=Script Context は初期化されました。
 i.selected={0} 件 ヒットしました。
 i.updated={0} 件 更新されました。
+i.usagePrefix=使い方:
 w.auto-commit-not-available=警告: 自動コミットモードが無効です。
 w.connection-closed-abnormally=警告: コネクションは正常に切断されませんでした。
 w.error-occurred-on-auto-rollback=警告: 自動ロールバック時にエラーが発生しました。({0})
@@ -37,3 +38,12 @@ e.readonly=エラー: コネクタは読取専用です。
 e.runtime=実行時エラー: {0}
 e.unsupported=[{0}]は実装されていません。
 e.usage=使い方: {0} {1}
+
+opt.connect=開始時にDB接続
+opt.cui=CUIモードで起動
+opt.gui=GUIモードで起動
+opt.help=ヘルプを表示
+opt.version=バージョンを表示
+
+help.header=オプション:
+help.footer=より詳しい情報については https://github.com/argius/Stew5/wiki をご覧ください。
