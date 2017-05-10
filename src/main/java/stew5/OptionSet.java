@@ -21,11 +21,10 @@ public final class OptionSet {
     }
 
     public static OptionSet parseArguments(String[] args) throws Exception {
-        OptionSet.Parser parser = new OptionSet.Parser();
-        return parser.parse(args);
+        return newParser().parse(args);
     }
 
-    public Parser newParser() {
+    public static Parser newParser() {
         return new Parser();
     }
 
