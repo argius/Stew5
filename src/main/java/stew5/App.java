@@ -135,6 +135,12 @@ public final class App {
         return ResourceManager.Default.read("version", "(UNKNOWN)");
     }
 
+    static void showUsage() {
+        ResourceManager res = ResourceManager.Default;
+        System.out.println(res.get("i.usagePrefix") + res.get("i.usage.syntax"));
+        System.out.println(res.get("usage.message"));
+    }
+
     /** main **/
     public static void main(String... args) {
         int guiCount = 0;
@@ -172,6 +178,8 @@ public final class App {
             ConsoleLauncher.main(args);
         } else if (guiCount > 0) {
             WindowLauncher.main(args);
+        } else {
+            showUsage();
         }
     }
 

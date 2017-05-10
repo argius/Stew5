@@ -49,3 +49,5 @@ opt.version=Show app version
 
 help.header=Options:
 help.footer=See https://github.com/argius/Stew5/wiki for further information.
+
+usage.message=type "stew5 --help" to show help
