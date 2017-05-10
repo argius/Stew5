@@ -15,6 +15,7 @@ dir=~/.$prodname
 baseurl=https://github.com/$owner/$prodnameminor
 bindir=$dir/bin
 libdir=$dir/lib
+extdir=$dir/ext
 zipfile=${prodname}-${ver}-bin.zip
 zipurl=$baseurl/releases/download/v$ver/$zipfile
 jarfile=${prodname}-${ver}.jar
@@ -22,6 +23,7 @@ jarpath=$libdir/$jarfile
 binfile=$bindir/$execname
 execfile=$execdir/$execname
 javaopts=""
+classpath="$jarpath:$extdir/*"
 
 errexit() {
   printf "\033[31m[ERROR]\033[0m" ; echo " $1"
@@ -82,6 +84,7 @@ case "`uname -a`" in
     echo "adjusting for Cygwin"
     jarpath=`cygpath -m $jarpath`
     javaopts="$javaopts -Djline.terminal=jline.UnixTerminal -Dstew.user.home=`cygpath -m ~/`"
+    classpath="$jarpath;`cygpath -m $extdir`/*"
     echo ""
     ;;
 esac
@@ -95,10 +98,11 @@ unzip -o $zipfile $jarfile || errexit "failed to unzip"
 
 mkdir -p $libdir && cp -fp $jarfile $libdir/
 test -f $libdir/$jarfile || errexit "failed to copy jar file"
-mkdir -p $bindir && ( echo "#!/bin/sh" ; echo "java $javaopts -jar $jarpath \"\$@\"" ) > $binfile
+mkdir -p $bindir && ( echo "#!/bin/sh" ; echo "java -cp \"$classpath\" $javaopts $execname.App \"\$@\"" ) > $binfile
 test -f $binfile || errexit "failed to create $binfile"
 chmod +x $binfile || errexit "failed to change a permission"
 ln -sf $binfile $execfile || errexit "failed to create a symlink of $binfile"
+mkdir -p $extdir || echo "warning: failed to create $extdir"
 
 echo "\"$prodname\" has been installed to $execfile and $dir/ ."
 echo "checking installation => `$execname --version`"
