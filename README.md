@@ -1,5 +1,6 @@
 Stew5
 =====
+[![Build Status](https://travis-ci.org/argius/Stew5.png)](https://travis-ci.org/argius/Stew5)
 
 Stew5 is a tiny utility tool for database via JDBC.
 
