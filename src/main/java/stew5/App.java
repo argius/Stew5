@@ -57,6 +57,8 @@ public final class App {
         Properties props = new Properties();
         try (InputStream is = new FileInputStream(new File(dir, PropFileName))) {
             props.load(is);
+        } catch (FileNotFoundException e) {
+            log.warn("%s", e);
         } catch (IOException e) {
             log.warn(e, "getFileProperties");
         }
