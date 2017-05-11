@@ -11,7 +11,7 @@ import org.junit.*;
 import stew5.*;
 import stew5.ui.swing.Menu.Item;
 
-@Ignore
+@Ignore // It doesn't work in headless environments
 public final class MenuTest {
 
     private static final ResourceManager res = ResourceManager.getInstance(Menu.class);
