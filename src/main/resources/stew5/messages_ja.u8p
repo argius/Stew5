@@ -41,6 +41,7 @@ e.usage=使い方: {0} {1}
 
 opt.connect=開始時にDB接続
 opt.cui=CUIモードで起動
+opt.edit=CUIの接続設定エディタを起動
 opt.gui=GUIモードで起動
 opt.help=ヘルプを表示
 opt.version=バージョンを表示

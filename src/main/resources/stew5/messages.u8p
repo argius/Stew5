@@ -43,6 +43,7 @@ e.usage=Usage: {0} {1}
 
 opt.connect=Connect DB at beginning app
 opt.cui=Start app with CUI mode
+opt.edit=Start "Connector Editor" on CUI
 opt.gui=Start app with CUI mode
 opt.help=Show help
 opt.version=Show app version

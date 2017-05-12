@@ -2,7 +2,7 @@ package stew5;
 
 import java.io.*;
 import java.util.*;
-import stew5.ui.console.ConsoleLauncher;
+import stew5.ui.console.*;
 import stew5.ui.swing.WindowLauncher;
 
 /**
@@ -165,6 +165,8 @@ public final class App {
         } else if (opts.isGui()) {
             WindowLauncher.main(args);
             return; // skip end of logging
+        } else if (opts.isEdit()) {
+            ConnectorMapEditor.main(args);
         } else {
             final String v = props.get("bootstrap", props.get("boot", ""));
             if (v.equalsIgnoreCase("CUI")) {

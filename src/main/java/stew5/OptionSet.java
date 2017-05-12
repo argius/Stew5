@@ -12,6 +12,7 @@ public final class OptionSet {
 
     private boolean cui;
     private boolean gui;
+    private boolean edit;
     private String connecterName;
     private String commandString;
     private boolean showVersion;
@@ -46,6 +47,10 @@ public final class OptionSet {
         return gui;
     }
 
+    public boolean isEdit() {
+        return edit;
+    }
+
     public String getCommandString() {
         return commandString;
     }
@@ -71,6 +76,7 @@ public final class OptionSet {
 
         private static final String OPTION_CUI = "cui";
         private static final String OPTION_GUI = "gui";
+        private static final String OPTION_EDIT = "edit";
         private static final String OPTION_CONNECT = "connect";
         private static final String OPTION_VERSION = "version";
         private static final String OPTION_HELP = "help";
@@ -81,6 +87,7 @@ public final class OptionSet {
             this.options = new Options();
             option(OPTION_CUI);
             option(OPTION_GUI);
+            option(OPTION_EDIT);
             option(OPTION_CONNECT, "c", true);
             option(OPTION_VERSION, "v");
             option(OPTION_HELP);
@@ -96,6 +103,7 @@ public final class OptionSet {
             CommandLine cl = parser.parse(options, args);
             o.cui = bool(cl, OPTION_CUI);
             o.gui = bool(cl, OPTION_GUI);
+            o.edit = bool(cl, OPTION_EDIT);
             o.connecterName = getConnectorName(cl);
             o.showVersion = bool(cl, OPTION_VERSION);
             o.help = bool(cl, OPTION_HELP);
