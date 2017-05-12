@@ -65,10 +65,11 @@ public final class Import extends Load {
                     stmt.addBatch();
                 } catch (SQLException ex) {
                     String message = "error occurred at " + recordCount;
-                    if (log.isTraceEnabled()) {
-                        log.trace(message, ex);
-                    } else if (log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug(message + " : " + ex);
+                    }
+                    if (log.isTraceEnabled()) {
+                        log.trace(ex);
                     }
                     ++errorCount;
                 }
