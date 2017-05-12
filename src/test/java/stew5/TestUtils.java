@@ -1,7 +1,9 @@
 package stew5;
 
+import java.awt.*;
 import java.sql.*;
 import java.util.*;
+import java.util.List;
 import stew5.ui.*;
 
 public final class TestUtils {
@@ -37,6 +39,13 @@ public final class TestUtils {
     public static String getCurrentMethodString(Throwable th) {
         StackTraceElement st = th.getStackTrace()[0];
         return String.format("%s.%s", st.getClassName(), st.getMethodName());
+    }
+
+    public static boolean isInHeadless() {
+        if (App.props.getAsBoolean("debug.headless")) {
+            return true;
+        }
+        return GraphicsEnvironment.isHeadless();
     }
 
     public static final class StringBuilderOutputProcessor implements OutputProcessor {

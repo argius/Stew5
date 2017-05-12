@@ -11,13 +11,16 @@ import org.junit.*;
 import stew5.*;
 import stew5.ui.swing.Menu.Item;
 
-@Ignore // It doesn't work in headless environments
+// Notice: It doesn't work in headless environments
 public final class MenuTest {
 
     private static final ResourceManager res = ResourceManager.getInstance(Menu.class);
 
     @Test
     public void testPropertyChange() {
+        if (TestUtils.isInHeadless()) {
+            return; // skip test
+        }
         final DoNothingAnyActionListener aal = new DoNothingAnyActionListener();
         Menu o = new Menu(aal);
         DatabaseInfoTree dbtree = new DatabaseInfoTree(aal);
@@ -145,12 +148,19 @@ public final class MenuTest {
         assertFalse(item4.isSelected());
     }
 
-    private static void firePropertyChange(Menu menu, Object src, String propertyName, Object oldValue, Object newValue) {
+    private static void firePropertyChange(Menu menu,
+                                           Object src,
+                                           String propertyName,
+                                           Object oldValue,
+                                           Object newValue) {
         menu.propertyChange(new PropertyChangeEvent(src, propertyName, oldValue, newValue));
     }
 
     @Test
     public void testSetEnabledStates() {
+        if (TestUtils.isInHeadless()) {
+            return; // skip test
+        }
         Menu o = new Menu(new DoNothingAnyActionListener());
         o.setEnabled(true);
         // TODO assertion of Menu.setEnabled
@@ -158,6 +168,9 @@ public final class MenuTest {
 
     @Test
     public void testRefreshAllAccelerators() throws FileNotFoundException {
+        if (TestUtils.isInHeadless()) {
+            return; // skip test
+        }
         final File keyBindConf = App.getSystemFile("keybind.conf");
         if (keyBindConf.exists()) {
             throw new IllegalStateException("file exists: " + keyBindConf.getAbsolutePath());
@@ -192,6 +205,9 @@ public final class MenuTest {
 
     @Test
     public void testCreateJMenuItems() {
+        if (TestUtils.isInHeadless()) {
+            return; // skip test
+        }
         Map<String, JMenuItem> m = new HashMap<>();
         List<JMenuItem> a = createJMenuItems(res, m, "group.data");
         JMenuItem menuSortResult = m.get("sortResult");
@@ -202,6 +218,9 @@ public final class MenuTest {
 
     @Test
     public void testCreateJMenuItem() {
+        if (TestUtils.isInHeadless()) {
+            return; // skip test
+        }
         JMenuItem menuSortResult = createJMenuItem(res, "sortResult");
         assertEquals("sortResult", menuSortResult.getActionCommand());
         assertEquals("alt pressed S", menuSortResult.getAccelerator().toString());
@@ -209,6 +228,9 @@ public final class MenuTest {
 
     @Test
     public void testEnumItem() {
+        if (TestUtils.isInHeadless()) {
+            return; // skip test
+        }
         assertEquals(Item.unknown, Item.of(""));
     }
 
