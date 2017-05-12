@@ -145,8 +145,6 @@ public final class App {
 
     /** main **/
     public static void main(String... args) {
-        int guiCount = 0;
-        int cuiCount = 0;
         OptionSet opts;
         try {
             opts = OptionSet.parseArguments(args);
@@ -155,33 +153,24 @@ public final class App {
         }
         if (opts.isShowVersion()) {
             System.out.println("Stew " + App.getVersion());
-            return;
-        }
-        if (opts.isHelp()) {
+        } else if (opts.isHelp()) {
             OptionSet.showHelp();
-            return;
-        }
-        if (guiCount == 0 && cuiCount == 0) {
-            for (String k : new String[]{"bootstrap", "boot",}) {
-                final String v = props.get(k, "");
-                if (v.equalsIgnoreCase("GUI")) {
-                    ++guiCount;
-                }
-                if (v.equalsIgnoreCase("CUI")) {
-                    ++cuiCount;
-                }
-            }
-        }
-        if (opts.isCui()) {
+        } else if (opts.isCui()) {
             ConsoleLauncher.main(args);
         } else if (opts.isGui()) {
             WindowLauncher.main(args);
-        } else if (cuiCount > 0) {
-            ConsoleLauncher.main(args);
-        } else if (guiCount > 0) {
-            WindowLauncher.main(args);
         } else {
-            showUsage();
+            final String v = props.get("bootstrap", props.get("boot", ""));
+            if (v.equalsIgnoreCase("CUI")) {
+                ConsoleLauncher.main(args);
+            } else if (v.equalsIgnoreCase("GUI")) {
+                WindowLauncher.main(args);
+            } else {
+                if (!v.isEmpty()) {
+                    System.err.printf("warning: invalid bootstrap option: %s%n", v);
+                }
+                showUsage();
+            }
         }
     }
 
