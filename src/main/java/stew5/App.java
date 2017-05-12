@@ -23,6 +23,7 @@ public final class App {
     }
 
     private static File initializeDirectory() {
+        log.info("init app");
         LayeredProperties tmpProps = new LayeredProperties(System.getenv(), System.getProperties());
         String s = tmpProps.get("home", "");
         if (s.isEmpty()) {
@@ -48,7 +49,7 @@ public final class App {
         Properties layer3 = System.getProperties();
         LayeredProperties newProps = new LayeredProperties(layer1, layer2, layer3);
         if (log.isDebugEnabled()) {
-            log.debug(newProps.dump());
+            log.debug("dump properties%s", newProps.dump());
         }
         return newProps;
     }
@@ -145,11 +146,15 @@ public final class App {
 
     /** main **/
     public static void main(String... args) {
+        log.info("start (version: %s)", getVersion());
+        log.debug("args=%s", Arrays.asList(args));
         OptionSet opts;
         try {
             opts = OptionSet.parseArguments(args);
         } catch (Exception e) {
-            throw new IllegalArgumentException(e);
+            System.err.printf("unexpected error: %s%n", e);
+            log.info("end abnormally");
+            return;
         }
         if (opts.isShowVersion()) {
             System.out.println("Stew " + App.getVersion());
@@ -159,12 +164,14 @@ public final class App {
             ConsoleLauncher.main(args);
         } else if (opts.isGui()) {
             WindowLauncher.main(args);
+            return; // skip end of logging
         } else {
             final String v = props.get("bootstrap", props.get("boot", ""));
             if (v.equalsIgnoreCase("CUI")) {
                 ConsoleLauncher.main(args);
             } else if (v.equalsIgnoreCase("GUI")) {
                 WindowLauncher.main(args);
+                return; // skip end of logging
             } else {
                 if (!v.isEmpty()) {
                     System.err.printf("warning: invalid bootstrap option: %s%n", v);
@@ -172,6 +179,7 @@ public final class App {
                 showUsage();
             }
         }
+        log.info("end");
     }
 
 }
