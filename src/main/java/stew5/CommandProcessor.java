@@ -75,7 +75,12 @@ final class CommandProcessor {
             outputMessage("e.unsupported", ex.getMessage());
         } catch (RuntimeException ex) {
             log.error(ex);
-            outputMessage("e.runtime", ex.getMessage());
+            String msg = ex.getMessage();
+            if (msg == null || msg.trim().isEmpty()) {
+                outputMessage("e.runtime-without-message", ex);
+            } else {
+                outputMessage("e.runtime", msg);
+            }
         } catch (Throwable th) {
             log.fatal(th);
             outputMessage("e.fatal", th.getMessage());

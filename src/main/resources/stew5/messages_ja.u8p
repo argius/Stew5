@@ -36,6 +36,7 @@ e.not-connect=接続されていません。
 e.not-found=エラー: コマンド [{0}] は見つかりませんでした。
 e.readonly=エラー: コネクタは読取専用です。
 e.runtime=実行時エラー: {0}
+e.runtime-without-message=実行時エラー（メッセージなしの {0} がスローされました）
 e.unsupported=[{0}]は実装されていません。
 e.usage=使い方: {0} {1}
 

@@ -38,6 +38,7 @@ e.not-connect=Not connected.
 e.not-found=Error: Command [{0}] was not found.
 e.readonly=Error: Connector is read-only.
 e.runtime=Runtime Error: {0}
+e.runtime-without-message=Runtime Error ({0} was thrown without message)
 e.unsupported=[{0}] is unsupported.
 e.usage=Usage: {0} {1}
 
