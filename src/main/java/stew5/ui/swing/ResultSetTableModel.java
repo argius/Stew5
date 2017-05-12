@@ -3,7 +3,6 @@ package stew5.ui.swing;
 import static java.sql.Types.*;
 import static java.util.Collections.*;
 import static stew5.text.TextUtilities.*;
-import java.math.BigDecimal;
 import java.sql.*;
 import java.util.*;
 import java.util.Map.Entry;
@@ -87,32 +86,12 @@ final class ResultSetTableModel extends DefaultTableModel {
     @Override
     public Class<?> getColumnClass(int columnIndex) {
         switch (types[columnIndex]) {
-            case CHAR:
-            case VARCHAR:
-            case LONGVARCHAR:
-                return String.class;
-            case BOOLEAN:
-                return Boolean.class;
-            case TINYINT:
-                return Byte.class;
-            case SMALLINT:
-                return Short.class;
-            case INTEGER:
-                return Integer.class;
-            case BIGINT:
-                return Long.class;
-            case REAL:
-                return Float.class;
-            case DOUBLE:
-            case FLOAT:
-                return Double.class;
-            case DECIMAL:
-            case NUMERIC:
-                return BigDecimal.class;
-            case BIT:
-            default:
+            case DATE:
+            case TIME:
+            case TIMESTAMP:
                 return Object.class;
         }
+        return SqlTypes.toClass(types[columnIndex]);
     }
 
     @Override

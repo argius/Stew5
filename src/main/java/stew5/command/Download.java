@@ -1,6 +1,5 @@
 package stew5.command;
 
-import static java.sql.Types.*;
 import java.io.*;
 import java.sql.*;
 import stew5.*;
@@ -37,57 +36,10 @@ public final class Download extends Command {
         assert columnCount >= 1;
         final int columnType = meta.getColumnType(targetColumn);
         final boolean isBinary;
-        switch (columnType) {
-            case TINYINT:
-            case SMALLINT:
-            case INTEGER:
-            case BIGINT:
-            case FLOAT:
-            case REAL:
-            case DOUBLE:
-            case NUMERIC:
-            case DECIMAL:
-                // numeric to string
-                isBinary = false;
-                break;
-            case BOOLEAN:
-            case BIT:
-            case DATE:
-            case TIME:
-            case TIMESTAMP:
-                // object to string
-                isBinary = false;
-                break;
-            case CHAR:
-            case VARCHAR:
-            case LONGVARCHAR:
-                // char to string
-                isBinary = false;
-                break;
-            case BINARY:
-            case VARBINARY:
-            case LONGVARBINARY:
-            case BLOB:
-                // binary to stream
-                isBinary = true;
-                break;
-            case CLOB:
-                // char to binary-stream
-                isBinary = true;
-                break;
-            case OTHER:
-                // ? to binary-stream (experimental)
-                // (e.g.: XML)
-                isBinary = true;
-                break;
-            case DATALINK:
-            case JAVA_OBJECT:
-            case DISTINCT:
-            case STRUCT:
-            case ARRAY:
-            case REF:
-            default:
-                throw new CommandException(String.format("unsupported type: %d", columnType));
+        try {
+            isBinary = SqlTypes.shouldReadDataAsBinary(columnType);
+        } catch (IllegalArgumentException ex) {
+            throw new CommandException(ex);
         }
         byte[] buffer = new byte[(isBinary) ? 0x10000 : 0];
         int count = 0;

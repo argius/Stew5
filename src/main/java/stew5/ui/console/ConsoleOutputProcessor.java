@@ -47,22 +47,7 @@ public final class ConsoleOutputProcessor implements OutputProcessor {
                     size = 1;
                 }
                 maxWidth = Math.max(maxWidth, size);
-                final int widthExpression;
-                switch (rsmeta.getColumnType(index)) {
-                    case Types.TINYINT:
-                    case Types.SMALLINT:
-                    case Types.INTEGER:
-                    case Types.BIGINT:
-                    case Types.REAL:
-                    case Types.DOUBLE:
-                    case Types.FLOAT:
-                    case Types.DECIMAL:
-                    case Types.NUMERIC:
-                        widthExpression = size;
-                        break;
-                    default:
-                        widthExpression = -size;
-                }
+                final int widthExpression = (SqlTypes.isRightAlign(rsmeta.getColumnType(index))) ? size : -size;
                 final String format = "%" + widthExpression + "s";
                 borderFormat.append(" " + format);
                 if (i != 0) {
