@@ -1,19 +1,23 @@
 package stew5.command;
 
+import static java.nio.charset.StandardCharsets.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import static stew5.TestUtils.*;
 import static stew5.command.Download.*;
-import java.io.IOException;
-import java.nio.file.Paths;
+import java.io.*;
+import java.nio.file.*;
 import java.sql.*;
-import org.hamcrest.Matchers;
+import org.hamcrest.*;
 import org.junit.*;
 import org.junit.rules.*;
 import stew5.*;
-import stew5.ui.console.ConsoleOutputProcessor;
+import stew5.ui.console.*;
 
-public class DownloadTest {
+public final class DownloadTest {
+
+    private static final String CMD = "download";
+    private static final String TBL = "download1"; // table name
 
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
@@ -21,7 +25,7 @@ public class DownloadTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    Download cmd = new Download();
+    Command cmd = new Download();
 
     @Before
     public void initEnv() {
@@ -31,15 +35,35 @@ public class DownloadTest {
     }
 
     @Test
-    public void testExecute() throws SQLException {
-        String tmpFolderPath = tmpFolder.getRoot().getAbsolutePath();
+    public void testExecute() throws Exception {
+        final String testName = TestUtils.getCurrentMethodString(new Exception());
+        String tmpFolderPath = tmpFolder.newFolder(testName).getAbsolutePath();
         try (Connection conn = connection()) {
-            cmd.execute(conn, p("download " + tmpFolderPath + "/a select id, id||'.txt' from table1"));
-            final String filePathA = tmpFolderPath + "/a/1.txt";
+            final String dir1 = tmpFolderPath + "/1";
+            cmd.execute(conn, p(CMD + " " + dir1 + " select id, 'a.txt' from table1"));
+            final String filePathA = dir1 + "/a.txt";
             assertTrue("file does not exists: " + filePathA, Paths.get(filePathA).toFile().exists());
-            cmd.execute(conn, p("download " + tmpFolderPath + "/b select name, id||'.txt' from table1"));
-            final String filePathB = tmpFolderPath + "/b/1.txt";
+            final String dir2 = tmpFolderPath + "/2";
+            cmd.execute(conn, p(CMD + " " + dir2 + " select name, 'b.txt' from table1"));
+            final String filePathB = dir2 + "/b.txt";
             assertTrue("file does not exists: " + filePathB, Paths.get(filePathB).toFile().exists());
+            // data type check
+            prepareTable(conn);
+            final String dir3 = tmpFolderPath + "/3";
+            cmd.execute(conn, p(CMD + " " + dir3 + " select content, id || '.txt' from " + TBL));
+            assertEquals("abcde123", Files.readAllLines(Paths.get(dir3 + "/1.txt"), UTF_8).get(0));
+            assertEquals("fgh456", Files.readAllLines(Paths.get(dir3 + "/2.txt"), UTF_8).get(0));
+            final String dir4 = tmpFolderPath + "/4";
+            cmd.execute(conn, p(CMD + " " + dir4 + " select updated_at, id || '.txt' from " + TBL));
+            assertEquals(String.valueOf(new Timestamp(1200000000000L)),
+                         Files.readAllLines(Paths.get(dir4 + "/1.txt"), UTF_8).get(0));
+            assertEquals(String.valueOf(new Timestamp(1300000000000L)),
+                         Files.readAllLines(Paths.get(dir4 + "/2.txt"), UTF_8).get(0));
+            final String dir5 = tmpFolderPath + "/5";
+            cmd.execute(conn, p(CMD + " " + dir5 + " select lob, id || '.txt' from " + TBL));
+            assertEquals("LOB1", Files.readAllLines(Paths.get(dir5 + "/1.txt"), UTF_8).get(0));
+            assertEquals("LOB2", Files.readAllLines(Paths.get(dir5 + "/2.txt"), UTF_8).get(0));
+            conn.rollback();
         }
     }
 
@@ -55,7 +79,7 @@ public class DownloadTest {
     public void testExecuteUsageException2() throws SQLException {
         try (Connection conn = connection()) {
             thrown.expect(UsageException.class);
-            cmd.execute(conn, p("download"));
+            cmd.execute(conn, p(CMD));
         }
     }
 
@@ -63,18 +87,46 @@ public class DownloadTest {
     public void testExecuteUsageException3() throws SQLException {
         try (Connection conn = connection()) {
             thrown.expect(UsageException.class);
-            cmd.execute(conn, p("download 1"));
+            cmd.execute(conn, p(CMD + " 1"));
         }
     }
 
-    @Ignore
     @Test
-    public void testExecuteIOException() throws SQLException {
+    public void testExecuteIOException1() throws SQLException {
+        // invalid path
         try (Connection conn = connection()) {
             thrown.expect(CommandException.class);
             thrown.expectCause(Matchers.<IOException> allOf(instanceOf(IOException.class),
                                                             hasProperty("message", containsString("("))));
-            cmd.execute(conn, p("download : select id from table1"));
+            cmd.execute(conn, p(CMD + " : select id from table1"));
+        }
+    }
+
+    @Test
+    public void testExecuteIOException2() throws Exception {
+        final String testName = TestUtils.getCurrentMethodString(new Exception());
+        String tmpFolderPath = tmpFolder.newFolder(testName).getAbsolutePath();
+        try (Connection conn = connection()) {
+            // constant file name
+            prepareTable(conn);
+            final String dir1 = tmpFolderPath + "/io2/1";
+            thrown.expect(CommandException.class);
+            thrown.expectCause(Matchers.<IOException> any(IOException.class));
+            cmd.execute(conn, p(CMD + " " + dir1 + " select id, 'a.txt' from " + TBL));
+            conn.rollback();
+        }
+    }
+
+    @Test
+    public void testExecuteIOException3() throws Exception {
+        final String testName = TestUtils.getCurrentMethodString(new Exception());
+        try (Connection conn = connection()) {
+            // fail to mkdirs
+            File f = tmpFolder.newFile(testName);
+            thrown.expect(CommandException.class);
+            thrown.expectCause(Matchers.<IOException> any(IOException.class));
+            cmd.execute(conn, p(CMD + " " + f.getAbsolutePath() + " select id, 'a.txt' from table1"));
+            conn.rollback();
         }
     }
 
@@ -84,7 +136,17 @@ public class DownloadTest {
             thrown.expect(CommandException.class);
             thrown.expectCause(Matchers.<SQLException> allOf(instanceOf(SQLException.class),
                                                              hasProperty("message", containsString("Syntax error"))));
-            cmd.execute(conn, p("download 1 select id from table1 where"));
+            cmd.execute(conn, p(CMD + " 1 select id from table1 where"));
+        }
+    }
+
+    @Test
+    public void testExecuteCommandException() throws SQLException {
+        try (Connection conn = connection()) {
+            prepareTable(conn);
+            thrown.expect(CommandException.class);
+            thrown.expectMessage("unsupported type");
+            cmd.execute(conn, p(CMD + " 1 select tags from " + TBL + " where id=1"));
         }
     }
 
@@ -112,6 +174,35 @@ public class DownloadTest {
         assertEquals("4.768MB", getSizeString(5000000));
         assertEquals("0.999GB", getSizeString(1073204953));
         assertEquals("1GB", getSizeString(1073204964));
+    }
+
+    static void prepareTable(Connection conn) throws SQLException {
+        final String sql = "create table "
+                           + TBL
+                           + " (id bigint primary key, content varchar(256), updated_at timestamp, lob text,"
+                           + " tags array)";
+        int index;
+        try (Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate(sql);
+        }
+        try (PreparedStatement stmt = conn.prepareStatement("insert into " + TBL + " values(?, ?, ?, ?, ?)")) {
+            index = 0;
+            stmt.setLong(++index, 1);
+            stmt.setString(++index, "abcde123");
+            stmt.setTimestamp(++index, new Timestamp(1200000000000L));
+            stmt.setString(++index, "LOB1");
+            stmt.setNull(++index, Types.ARRAY);
+            stmt.executeUpdate();
+            stmt.clearParameters();
+            index = 0;
+            stmt.setLong(++index, 2);
+            stmt.setString(++index, "fgh456");
+            stmt.setTimestamp(++index, new Timestamp(1300000000000L));
+            stmt.setString(++index, "LOB2");
+            stmt.setNull(++index, Types.ARRAY);
+            stmt.executeUpdate();
+            conn.commit();
+        }
     }
 
 }
