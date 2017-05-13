@@ -28,6 +28,7 @@ final class ContextMenu {
     static JPopupMenu create(JComponent target, AnyActionListener dst, String name) {
         log.atEnter("set", dst, name);
         JPopupMenu menu = new JPopupMenu();
+        menu.setName("ContextMenuOf" + name);
         Map<String, KeyStroke> keyBounds = extractKeyBinds(target);
         AnyAction aa = new AnyAction(dst);
         for (JMenuItem o : Menu.createJMenuItems(res, name)) {

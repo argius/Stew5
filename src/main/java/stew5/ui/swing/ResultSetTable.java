@@ -305,11 +305,18 @@ final class ResultSetTable extends JTable implements AnyActionListener, TextSear
         } else if (ev.isAnyOf(findColumnName)) {
             anyActionListener.anyActionPerformed(ev);
         } else if (ev.isAnyOf(addEmptyRow)) {
+            boolean isCalledByHeader = false;
+            Object evtSrc = ev.getSource();
+            if (evtSrc != null && evtSrc instanceof JMenuItem) {
+                Container parent = ((JMenuItem)evtSrc).getParent();
+                isCalledByHeader = parent != null && parent.getName().contains("ResultSetTableColumnHeader");
+            }
             ResultSetTableModel m = getResultSetTableModel();
             int[] selectedRows = getSelectedRows();
-            if (selectedRows.length > 0) {
-                final int nextRow = selectedRows[selectedRows.length - 1] + 1;
-                for (int i = 0; i < selectedRows.length; i++) {
+            if (selectedRows.length > 0 || isCalledByHeader) {
+                final int count = (isCalledByHeader) ? 1 : selectedRows.length;
+                final int nextRow = (isCalledByHeader) ? 0 : selectedRows[selectedRows.length - 1] + 1;
+                for (int i = 0; i < count; i++) {
                     m.insertUnlinkedRow(nextRow, new Object[m.getColumnCount()]);
                 }
             } else {
