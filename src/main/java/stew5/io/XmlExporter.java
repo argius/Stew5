@@ -1,108 +1,125 @@
 package stew5.io;
 
 import java.io.*;
-import stew5.io.StringBasedSerializer.Element;
+import java.util.*;
+import javax.xml.bind.*;
+import javax.xml.namespace.*;
+import javax.xml.stream.*;
+import javax.xml.stream.events.*;
+import stew5.*;
 
 /**
- * The Exporter for XML.
+ * XmlExporter provides a feature that writes data to file as XML.
  */
 public final class XmlExporter extends Exporter {
 
-    private static final String ENCODING = "utf-8";
-    private static final String TAG_TABLE = "table";
-    private static final String TAG_TABLE_START = "<" + TAG_TABLE + " writer=\"" + XmlExporter.class.getName() + "\">";
-    private static final String TAG_TABLE_END = "</" + TAG_TABLE + ">";
-    private static final String TAG_HEADERROW = "headerrow";
-    private static final String TAG_HEADERROW_END = "</" + TAG_HEADERROW + ">";
-    private static final String TAG_HEADERROW_START = "<" + TAG_HEADERROW + ">";
-    private static final String TAG_HEADER = "header";
-    private static final String TAG_HEADER_START = "<" + TAG_HEADER;
-    private static final String TAG_HEADER_END = "</" + TAG_HEADER + ">";
-    private static final String TAG_ROW = "row";
-    private static final String TAG_ROW_START = "<" + TAG_ROW + ">";
-    private static final String TAG_ROW_END = "</" + TAG_ROW + ">";
+    private static final String fqcn = XmlExporter.class.getName();
 
-    private PrintWriter out;
+    private static final String TAG_TABLE = "table";
+    private static final String TAG_HEADERROW = "headerrow";
+    private static final String TAG_HEADER = "header";
+
+    private XMLEventWriter xew;
+    private XMLEventFactory xef;
+    private Characters newLine;
+    private boolean doneWriteBeginning;
 
     /**
-     * An constructor.
-     * @param outputStream
+     * A constructor.
+     * @param os {@link OutputStream}
      */
-    public XmlExporter(OutputStream outputStream) {
-        super(outputStream);
+    public XmlExporter(OutputStream os) throws IOException {
+        super(os);
         try {
-            this.out = new PrintWriter(new OutputStreamWriter(outputStream, ENCODING));
-            out.println("<?xml version=\"1.0\" encoding=\"" + ENCODING + "\"?>");
-            out.println("<!DOCTYPE " + TAG_TABLE + " SYSTEM \"stew-table.dtd\">");
-            out.println(TAG_TABLE_START);
-        } catch (UnsupportedEncodingException ex) {
-            throw new IllegalStateException(ex);
+            this.xew = XMLOutputFactory.newFactory().createXMLEventWriter(os);
+            this.xef = XMLEventFactory.newInstance();
+            this.newLine = xef.createCharacters("\n");
+        } catch (XMLStreamException | FactoryConfigurationError ex) {
+            throw new IOException(ex);
         }
+    }
+
+    private void ensureOpen0() throws IOException {
+        ensureOpen();
+        if (!doneWriteBeginning) {
+            try {
+                writeBeginning();
+            } catch (XMLStreamException ex) {
+                throw new IOException(ex);
+            }
+            doneWriteBeginning = true;
+        }
+    }
+
+    private void writeBeginning() throws XMLStreamException {
+        xew.add(xef.createStartDocument());
+        xew.add(newLine);
+        xew.add(xef.createDTD("<!DOCTYPE table >"));
+        xew.add(newLine);
+        xew.add(xef.createStartElement(QName.valueOf(TAG_TABLE), null, null));
+        xew.add(newLine);
+        xew.add(newLine);
+        List<Attribute> attrs = Arrays.asList(xef.createAttribute("name", "generator"));
+        xew.add(xef.createStartElement(QName.valueOf("meta"), attrs.iterator(), null));
+        xew.add(xef.createCharacters(fqcn + App.getVersion()));
+        xew.add(xef.createEndElement(QName.valueOf("meta"), null));
+        xew.add(newLine);
+        xew.add(newLine);
+        xew.flush();
     }
 
     @Override
     protected void writeHeader(Object[] header) throws IOException {
-        ensureOpen();
-        out.println(TAG_HEADERROW_START);
-        final String fmt = TAG_HEADER_START + " index=\"%d\">%s" + TAG_HEADER_END + "%n";
-        for (int i = 0; i < header.length; i++) {
-            out.printf(fmt, i, convertCData(String.valueOf(header[i])));
+        ensureOpen0();
+        try {
+            QName parentTag = QName.valueOf(TAG_HEADERROW);
+            QName childTag = QName.valueOf(TAG_HEADER);
+            xew.add(xef.createStartElement(parentTag, null, null));
+            for (Object o : header) {
+                xew.add(xef.createStartElement(childTag, null, null));
+                xew.add(xef.createCharacters(String.valueOf(o)));
+                xew.add(xef.createEndElement(childTag, null));
+            }
+            xew.add(xef.createEndElement(parentTag, null));
+            xew.add(newLine);
+            xew.add(newLine);
+            xew.flush();
+        } catch (FactoryConfigurationError | XMLStreamException | RuntimeException ex) {
+            throw new IOException(ex);
         }
-        out.println(TAG_HEADERROW_END);
-        out.flush();
     }
 
     @Override
     public void addRow(Object[] values) throws IOException {
-        ensureOpen();
-        out.print(TAG_ROW_START);
-        for (int i = 0; i < values.length; i++) {
-            Object o = values[i];
-            Element element = StringBasedSerializer.serialize(o);
-            String type = element.getType();
-            if (element.isNull()) {
-                out.print("<" + type + "/>");
-            } else {
-                out.print("<" + type);
-                if (type.equals(Element.OBJECT)) {
-                    out.print(" class=\"");
-                    out.print(o.getClass().getName());
-                    out.print("\"");
-                } else if (type.equals(Element.TIME)) {
-                    out.print(" display=\"");
-                    out.print(o);
-                    out.print("\"");
-                }
-                out.print(">");
-                out.print(convertCData(element.getValue()));
-                out.print("</" + type + ">");
-            }
+        ensureOpen0();
+        try {
+            JAXBContext jc = JAXBContext.newInstance(XmlRowEntity.class);
+            Marshaller m = jc.createMarshaller();
+            m.setProperty(Marshaller.JAXB_FRAGMENT, true);
+            XmlRowEntity row = new XmlRowEntity(Arrays.asList(values));
+            m.marshal(row, xew);
+            xew.add(newLine);
+            xew.add(newLine);
+            xew.flush();
+        } catch (JAXBException | XMLStreamException | RuntimeException ex) {
+            throw new IOException(ex);
         }
-        out.println(TAG_ROW_END);
-        out.flush();
-    }
-
-    private static String convertCData(String string) {
-        String s = string;
-        if (s.indexOf('<') >= 0 || s.indexOf('>') >= 0) {
-            if (s.contains("]]>")) {
-                s = s.replaceAll("\\]\\]>", "]]&gt;");
-            }
-            return "<![CDATA[" + s + "]]>";
-        }
-        return s;
     }
 
     @Override
     public void close() throws IOException {
-        ensureOpen();
+        ensureOpen0();
         try {
-            if (out != null) {
-                out.print(TAG_TABLE_END);
-                out.close();
+            if (xew != null) {
+                try {
+                    xew.add(xef.createEndElement(QName.valueOf(TAG_TABLE), null));
+                } finally {
+                    xew.close();
+                }
             }
+        } catch (XMLStreamException ex) {
+            throw new IOException(ex);
         } finally {
-            out = null;
             super.close();
         }
     }

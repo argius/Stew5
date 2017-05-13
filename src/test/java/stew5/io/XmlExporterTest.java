@@ -3,12 +3,23 @@ package stew5.io;
 import static org.junit.Assert.*;
 import java.io.*;
 import java.util.*;
+import javax.xml.*;
+import javax.xml.transform.stream.*;
+import javax.xml.validation.*;
 import org.junit.*;
+import org.junit.rules.*;
+import org.xml.sax.*;
 
 public final class XmlExporterTest {
 
+    @Rule
+    public TemporaryFolder tmpFolder = new TemporaryFolder();
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
     @Test
-    public void testAddRow() throws IOException {
+    public void testXmlExporter() throws IOException, SAXException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         Date time = new Date(5000000 * 1000L);
         try (XmlExporter exporter = new XmlExporter(bos)) {
@@ -16,25 +27,78 @@ public final class XmlExporterTest {
             exporter.addRow(a("test1", "567"));
             exporter.addRow(a("test2", "890 "));
             exporter.addRow(a("nulltest", null));
-            exporter.addRow(a("objecttest", new StringBuilder("test")));
             exporter.addRow(a("timetest", time));
         }
-        assertEquals("<?xml version=\"1.0\" encoding=\"utf-8\"?>%n"
-                     + "<!DOCTYPE table SYSTEM \"stew-table.dtd\">%n"
-                     + "<table writer=\"stew5.io.XmlExporter\">%n"
-                     + "<headerrow>%n<header index=\"0\">name</header>%n<header index=\"1\">number</header>%n</headerrow>%n"
-                     + "<row><string>test1</string><string>567</string></row>%n"
-                     + "<row><string>test2</string><string>890 </string></row>%n"
-                     + "<row><string>nulltest</string><null/></row>%n"
-                     + "<row><string>objecttest</string><object class=\"java.lang.StringBuilder\">"
-                     + "ACED0005737200176A6176612E6C616E672E537472696E674275696C6465723CD5FB145A4C6ACB03000078707704000"
-                     + "00004757200025B43B02666B0E25D84AC02000078700000001400740065007300740000000000000000000000000000"
-                     + "00000000000000000000000000000000000078</object></row>%n"
-                     + "<row><string>timetest</string><time display=\""
-                     + time
-                     + "\">5000000000</time></row>%n"
-                     + "</table>",
-                     bos.toString().replaceAll("\r?\n", "%n"));
+        // [Validation]
+        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        Validator validator;
+        try (InputStream is = getClass().getResourceAsStream("stew-table.xsd")) {
+            validator = factory.newSchema(new StreamSource(is)).newValidator();
+        }
+        // exported XML
+        try {
+            validator.validate(new StreamSource(new ByteArrayInputStream(bos.toByteArray())));
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(String.format("%s%n%s", e, bos.toString()));
+        }
+        // invalid XML 1 (item tag)
+        final String x1;
+        x1 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+             + "<!DOCTYPE table >"
+             + "<table writer=\"stew5.io.XmlExporter\" /><item />";
+        try {
+            validator.validate(new StreamSource(new StringReader(x1)));
+            fail("invalid XML should be thrown SAXException");
+        } catch (SAXException ex) {
+            // OK
+        }
+        // invalid XML 2 (no DOCTYPE)
+        final String x2;
+        x2 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+             + "<table writer=\"stew5.io.XmlExporter\">"
+             + "<dummy />"
+             + "</table>";
+        try {
+            validator.validate(new StreamSource(new StringReader(x2)));
+            fail("invalid XML should be thrown SAXException");
+        } catch (SAXException ex) {
+            // OK
+        }
+    }
+
+    @Test
+    public void testXmlExporterThrowsNullPointerException() throws IOException {
+        thrown.expect(NullPointerException.class);
+        try (XmlExporter exp = new XmlExporter(null)) {
+            // skip
+        }
+    }
+
+    @Test
+    public void testWriteHeaderThrowsIOException() throws IOException {
+        thrown.expect(IOException.class);
+        thrown.expectMessage("RuntimeException: thrown by ErrorGenerator");
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        class ErrorGenerator {
+            @Override
+            public String toString() {
+                throw new RuntimeException("thrown by ErrorGenerator");
+            }
+        }
+        try (XmlExporter exp = new XmlExporter(bos)) {
+            exp.addHeader(new Object[]{new ErrorGenerator()});
+        }
+    }
+
+    @Test
+    public void testAddRowThrowsIOException() throws IOException {
+        thrown.expect(IOException.class);
+        thrown.expectMessage("Exception nor any of its super class is known to this context");
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (XmlExporter exp = new XmlExporter(bos)) {
+            exp.addRow(new Object[]{new Exception()});
+        }
     }
 
     @SafeVarargs
