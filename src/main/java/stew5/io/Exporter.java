@@ -19,6 +19,7 @@ public abstract class Exporter implements AutoCloseable {
     protected Exporter(OutputStream os) {
         this.os = os;
         this.wasWrittenHeader = false;
+        this.closed = false;
     }
 
     /**
@@ -67,6 +68,7 @@ public abstract class Exporter implements AutoCloseable {
             try {
                 os.close();
             } finally {
+                closed = true;
                 os = null;
             }
         }

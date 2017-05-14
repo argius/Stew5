@@ -9,7 +9,8 @@ public abstract class Importer implements AutoCloseable {
 
     protected InputStream is;
     protected boolean wasReadHeader;
-    protected boolean closed;
+
+    private boolean closed;
 
     /**
      * A constructor.
