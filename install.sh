@@ -6,7 +6,7 @@ set -eu
 
 prodname=stew
 prodnameminor=Stew5
-ver=5.0.0-beta2
+ver=5.0.0-beta3
 owner=argius
 execname=stew5
 execdir=/usr/local/bin
