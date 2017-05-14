@@ -61,7 +61,7 @@ public final class XmlExporter extends Exporter {
         xew.add(newLine);
         List<Attribute> attrs = Arrays.asList(xef.createAttribute("name", "generator"));
         xew.add(xef.createStartElement(QName.valueOf("meta"), attrs.iterator(), null));
-        xew.add(xef.createCharacters(fqcn + App.getVersion()));
+        xew.add(xef.createCharacters(fqcn + " version " + App.getVersion()));
         xew.add(xef.createEndElement(QName.valueOf("meta"), null));
         xew.add(newLine);
         xew.add(newLine);
