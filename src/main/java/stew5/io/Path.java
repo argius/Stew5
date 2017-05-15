@@ -6,7 +6,7 @@ import java.net.*;
 /**
  * Path is an extended java.util.File.
  */
-@Deprecated // TODO Remove this, scheduled for 5.0.0-beta3
+@Deprecated // TODO Remove this, scheduled after the release of version 5.0.0-beta4
 public final class Path extends File {
 
     private static final long serialVersionUID = 6787315355616650978L;

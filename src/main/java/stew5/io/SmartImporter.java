@@ -6,7 +6,7 @@ import java.util.*;
 /**
  * An implementation of Importer  smart ()
  */
-@Deprecated // TODO Remove this, scheduled for 5.0.0-beta3
+@Deprecated // TODO Remove this, scheduled after the release of version 5.0.0-beta4
 public final class SmartImporter extends Importer {
 
     private final String separator;

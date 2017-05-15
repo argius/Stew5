@@ -7,7 +7,7 @@ import stew5.io.CsvFormatter.FormatType;
 /**
  * A simple implementation of Exporter.
  */
-@Deprecated // TODO Remove this, scheduled for 5.0.0-beta3
+@Deprecated // TODO Remove this, scheduled after the release of version 5.0.0-beta4
 public final class SimpleExporter extends Exporter {
 
     private static final String PROP_FORMAT = App.rootPackageName + ".SimpleExporter.format";
