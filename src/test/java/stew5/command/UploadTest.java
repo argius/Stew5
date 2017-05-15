@@ -44,7 +44,6 @@ public class UploadTest {
             byte[] binData = new byte[]{0x01, 0x02};
             Files.write(binFile.toPath(), binData);
             executeCommand(cmd, conn, " " + binFile + " B update table2 set filedata=? where id=1");
-            // TODO remove it executeCommand(cmd, conn, " " + binFile + " B update table2 set filedataX=? where id=1");
             Download download = new Download();
             download.setEnvironment(env);
             executeCommand(download, conn, " " + dir + " select filedata, id, '.bin' from table2 where id=1");
@@ -60,14 +59,17 @@ public class UploadTest {
             File dir = tmpFolder.newFolder(testName);
             File textFile = new File(dir, "t.txt");
             TestUtils.writeLines(textFile.toPath(), "uploadx");
+            File binFile = new File(dir, "b.txt");
+            byte[] binData = "upload*test".getBytes();
+            Files.write(binFile.toPath(), binData);
             try (PreparedStatement stmt = conn.prepareStatement("update table1 set name=? where id=1")) {
                 cmdUpload.uploadFile(stmt, textFile, 2);
                 String fetchSql = "select name from table1 where id = 1";
                 assertEquals("uploadx%n", select(conn, fetchSql).replaceAll("\r?\n", "%n"));
-                cmdUpload.uploadFile(stmt, textFile, 1);
-                assertEquals("75706c6f6164780d0a", select(conn, fetchSql).replaceAll("\r?\n", "%n"));
-                cmdUpload.uploadFile(stmt, textFile, 0);
-                assertEquals("75706c6f6164780d0a", select(conn, fetchSql).replaceAll("\r?\n", "%n"));
+                cmdUpload.uploadFile(stmt, binFile, 1);
+                assertEquals("75706c6f61642a74657374", select(conn, fetchSql));
+                cmdUpload.uploadFile(stmt, binFile, 0);
+                assertEquals("75706c6f61642a74657374", select(conn, fetchSql));
             }
         }
     }
