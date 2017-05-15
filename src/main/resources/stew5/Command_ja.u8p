@@ -22,7 +22,7 @@ usage.Import=[<データファイル> <テーブル名> [ HEADER ]]
 usage.Load=[<SQLファイル> | <データファイル> <テーブル名> [ HEADER ]]
 usage.Report=- | <テーブル名> [ FULL | PK | INDEX ]
 usage.Time=[<回数>] <SQL文>
-usage.Upload=<ファイル> <SQL文(UPDATE|INSERT)>
+usage.Upload=<ファイル> [ T | TEXT | B | BIN ] <SQL文(UPDATE|INSERT)>
 usage.Wait=<秒(小数第3位まで)> 
 
 Export.command.usage={0}\n  {1} {2}
@@ -54,3 +54,7 @@ Time.summary=\
 平均 : {1,number,0.000} 秒\n\
 最大 : {2,number,0.000} 秒\n\
 最小 : {3,number,0.000} 秒
+
+Upload.msg.destinationTypeIs=アップロード先のデータ型は[{0}]です。
+Upload.msg.failedToDetectDestinationType=アップロード先のデータ型を取得できませんでした。（原因: {0}）\n代わりにファイルのコンテンツタイプで判別します。
+Upload.msg.fileContentTypeIs=ファイルのコンテンツタイプは[{0}]です。

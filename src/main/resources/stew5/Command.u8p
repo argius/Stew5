@@ -22,7 +22,7 @@ usage.Import=<data-file> <table-name> [ HEADER ]
 usage.Load=<SQL-file> | <data-file> <table-name> [ HEADER ]
 usage.Report=- | <table-name> [ FULL | PK | INDEX ]
 usage.Time=[<count>] <SQL>
-usage.Upload=<file> <SQL(UPDATE|INSERT)>
+usage.Upload=<file> [ T | TEXT | B | BIN ] <SQL(UPDATE|INSERT)>
 usage.Wait=<seconds(3 digits after the decimal point)> 
 
 Export.command.usage={0}\n  {1} {2}
@@ -54,3 +54,7 @@ Total: {0,number,0.000} seconds\n\
   Ave: {1,number,0.000} seconds\n\
   Max: {2,number,0.000} seconds\n\
   Min: {3,number,0.000} seconds
+
+Upload.msg.destinationTypeIs=The data type of upload destination is [{0}].
+Upload.msg.failedToDetectDestinationType=Failed to get data type (cause: {0}). Detects the content type of uploading file instead.
+Upload.msg.fileContentTypeIs=The file content type is [{0}].
