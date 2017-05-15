@@ -3,11 +3,9 @@ package stew5.io;
 import static org.junit.Assert.*;
 import static stew5.io.HtmlExporter.*;
 import java.io.*;
-import java.nio.charset.*;
-import java.nio.file.*;
-import java.util.*;
 import org.junit.*;
 import org.junit.rules.*;
+import stew5.*;
 
 public final class HtmlExporterTest {
 
@@ -35,7 +33,7 @@ public final class HtmlExporterTest {
         assertEquals("<style>/* URI=dummy *//* java.nio.file.NoSuchFileException: dummy */</style>",
                      createStyleTag("dummy", true));
         File tmpFile = tmpFolder.newFile();
-        Files.write(tmpFile.toPath(), Arrays.asList("body { color: black }"), StandardCharsets.UTF_8);
+        TestUtils.writeLines(tmpFile.toPath(), "body { color: black }");
         assertEquals("<style>body { color: black }</style>",
                      createStyleTag(tmpFile.getAbsolutePath(), true).replaceAll("[\r\n]", ""));
     }

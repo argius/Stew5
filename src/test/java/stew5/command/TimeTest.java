@@ -10,8 +10,6 @@ import stew5.*;
 
 public class TimeTest {
 
-    private static final String CMD = "time";
-
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
 
@@ -31,14 +29,14 @@ public class TimeTest {
     @Test
     public void testExecute() throws SQLException {
         try (Connection conn = connection()) {
-            cmd.execute(conn, p(CMD + " select id, substr(name, 0, 2) from table1"));
+            executeCommand(cmd, conn, "select id, substr(name, 0, 2) from table1");
             assertThat(op.getOutputString(), Matchers.matchesPattern(".+0\\.\\d{3}.+"));
-            cmd.execute(conn, p(CMD + " insert into table1 values (2, 'Bob')"));
+            executeCommand(cmd, conn, "insert into table1 values (2, 'Bob')");
             assertThat(op.getOutputString(), Matchers.matchesPattern(".+0\\.\\d{3}.+"));
-            cmd.execute(conn, p(CMD + " 2 select id, substr(name, 0, 2) from table1"));
+            executeCommand(cmd, conn, "2 select id, substr(name, 0, 2) from table1");
             assertThat(op.getOutputString(),
                        Matchers.matchesPattern("(?s).+0\\.\\d{3}.+0\\.\\d{3}.+0\\.\\d{3}.+0\\.\\d{3}.+"));
-            cmd.execute(conn, p(CMD + " 3 update table1 set name = 'test'"));
+            executeCommand(cmd, conn, "3 update table1 set name = 'test'");
             assertThat(op.getOutputString(),
                        Matchers.matchesPattern("(?s).+0\\.\\d{3}.+0\\.\\d{3}.+0\\.\\d{3}.+0\\.\\d{3}.+"));
             conn.rollback();
@@ -49,7 +47,7 @@ public class TimeTest {
     public void testUsageException1() throws SQLException {
         try (Connection conn = connection()) {
             thrown.expect(UsageException.class);
-            cmd.execute(conn, p(CMD));
+            executeCommand(cmd, conn, "");
         }
     }
 
@@ -57,7 +55,7 @@ public class TimeTest {
     public void testUsageException2() throws SQLException {
         try (Connection conn = connection()) {
             thrown.expect(UsageException.class);
-            cmd.execute(conn, p(CMD + " 1"));
+            executeCommand(cmd, conn, "1");
         }
     }
 
@@ -67,7 +65,7 @@ public class TimeTest {
             thrown.expect(CommandException.class);
             thrown.expectCause(Matchers.any(SQLException.class));
             thrown.expectMessage("Syntax error");
-            cmd.execute(conn, p(CMD + " select from"));
+            executeCommand(cmd, conn, "select from");
         }
     }
 

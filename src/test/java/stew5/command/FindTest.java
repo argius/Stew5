@@ -10,8 +10,6 @@ import stew5.*;
 
 public final class FindTest {
 
-    private static final String CMD = "find";
-
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
 
@@ -36,10 +34,10 @@ public final class FindTest {
                 conn.commit();
             }
             TestUtils.setConnectionToEnv(conn, env);
-            cmd.execute(conn, p(CMD + " TABLE1"));
+            executeCommand(cmd, conn, "TABLE1");
             assertThat(op.getOutputString(), Matchers.containsString("[TABLE1, TABLE, PUBLIC, TEST]"));
             // TODO fix it
-            // cmd.execute(conn, p(CMD + " *TABLE* INDEX"));
+            // executeCommand(cmd, conn, "*TABLE* INDEX"));
             // assertThat(op.getOutputString(), Matchers.containsString("[TABLE1, TABLE, PUBLIC, TEST]"));
         }
     }
@@ -53,7 +51,7 @@ public final class FindTest {
     public void testUsageException() throws SQLException {
         try (Connection conn = connection()) {
             thrown.expect(UsageException.class);
-            cmd.execute(conn, p(CMD));
+            executeCommand(cmd, conn, "");
         }
     }
 

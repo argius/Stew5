@@ -1,12 +1,9 @@
 package stew5.command;
 
-import static java.nio.charset.StandardCharsets.*;
 import static org.junit.Assert.*;
 import static stew5.TestUtils.*;
 import java.io.*;
-import java.nio.file.*;
 import java.sql.*;
-import java.util.*;
 import org.hamcrest.*;
 import org.junit.*;
 import org.junit.rules.*;
@@ -15,7 +12,6 @@ import stew5.io.*;
 
 public class LoadTest {
 
-    static final String CMD = "load";
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
 
@@ -40,18 +36,18 @@ public class LoadTest {
         try (Connection conn = connection()) {
             TestUtils.setConnectionToEnv(conn, env); // for using Command.invoke
             // SQL select file
-            Files.write(f1.toPath(), Arrays.asList("select id || '+' || name from table1"), UTF_8);
-            cmd.execute(conn, p(CMD + " " + f1.getAbsolutePath()));
+            TestUtils.writeLines(f1.toPath(), "select id || '+' || name from table1");
+            executeCommand(cmd, conn, f1.getAbsolutePath());
             assertThat(op.getOutputString(), Matchers.startsWith("[1+argius]"));
             // data file
-            Files.write(f2.toPath(), Arrays.asList("2,Bob", "3,Chris"), UTF_8);
-            cmd.execute(conn, p(CMD + " " + f2.getAbsolutePath() + " table1"));
+            TestUtils.writeLines(f2.toPath(), "2,Bob", "3,Chris");
+            executeCommand(cmd, conn, f2.getAbsolutePath() + " table1");
             op.clearBuffer();
             Command.invoke(env, "select id || '+' || name from table1 order by id");
             assertThat(op.getOutputString(), Matchers.containsString("[1+argius][2+Bob][3+Chris]"));
             // SQL update file
-            Files.write(f1.toPath(), Arrays.asList("update table1 set name='Davis' where id=3"), UTF_8);
-            cmd.execute(conn, p(CMD + " " + f1.getAbsolutePath()));
+            TestUtils.writeLines(f1.toPath(), "update table1 set name='Davis' where id=3");
+            executeCommand(cmd, conn, f1.getAbsolutePath());
             op.clearBuffer();
             Command.invoke(env, "select id || '+' || name from table1 order by id");
             assertThat(op.getOutputString(), Matchers.containsString("[1+argius][2+Bob][3+Davis]"));
@@ -66,14 +62,14 @@ public class LoadTest {
         File f = tmpFolder.newFile(testName + ".csv");
         try (Connection conn = connection()) {
             TestUtils.setConnectionToEnv(conn, env); // for using Command.invoke
-            Files.write(f.toPath(), Arrays.asList("2,Bob", "3,Chris"), UTF_8);
+            TestUtils.writeLines(f.toPath(), "2,Bob", "3,Chris");
             PreparedStatement stmt = conn.prepareStatement("insert into table1 values (?, ?)");
             cmdLoad.insertRecords(stmt, Importer.getImporter(f));
             op.clearBuffer();
             Command.invoke(env, "select id || '+' || name from table1 order by id");
             assertThat(op.getOutputString(), Matchers.containsString("[1+argius][2+Bob][3+Chris]"));
             // in case of error
-            Files.write(f.toPath(), Arrays.asList("1"), UTF_8);
+            TestUtils.writeLines(f.toPath(), "1");
             cmdLoad.insertRecords(stmt, Importer.getImporter(f));
             assertThat(op.getOutputString(), Matchers.matchesPattern(".+0.+"));
             conn.rollback();
@@ -84,7 +80,7 @@ public class LoadTest {
     public void testUsageException() throws SQLException {
         try (Connection conn = connection()) {
             thrown.expect(UsageException.class);
-            cmd.execute(conn, p(CMD));
+            executeCommand(cmd, conn, "");
         }
     }
 

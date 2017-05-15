@@ -12,7 +12,6 @@ import stew5.ui.console.*;
 
 public final class WaitTest {
 
-    private static final String CMD = "wait";
     private static final ResourceManager res = ResourceManager.getInstance(Command.class);
 
     @Rule
@@ -30,7 +29,7 @@ public final class WaitTest {
     @Test
     public void testAll() throws SQLException {
         try (Connection conn = connection()) {
-            cmd.execute(conn, p(CMD + " 0.1"));
+            executeCommand(cmd, conn, "0.1");
         }
     }
 
@@ -39,7 +38,7 @@ public final class WaitTest {
     public void testExecute() throws SQLException {
         try (Connection conn = connection()) {
             long t = System.currentTimeMillis();
-            cmd.execute(conn, p(CMD + " 3.1"));
+            executeCommand(cmd, conn, "3.1");
             t = System.currentTimeMillis() - t;
             assertThat(t, Matchers.greaterThan(3000L));
             assertThat(t, Matchers.lessThan(3300L));
@@ -51,7 +50,7 @@ public final class WaitTest {
         try (Connection conn = connection()) {
             thrown.expect(UsageException.class);
             thrown.expectMessage(res.get("usage." + cmd.getClass().getSimpleName()));
-            cmd.execute(conn, p(CMD + " X"));
+            executeCommand(cmd, conn, "X");
         }
     }
 
@@ -68,7 +67,7 @@ public final class WaitTest {
         try (Connection conn = connection()) {
             thrown.expect(CommandException.class);
             thrown.expectCause(Matchers.any(InterruptedException.class));
-            cmd.execute(conn, p(CMD + " 3"));
+            executeCommand(cmd, conn, "3");
         }
     }
 

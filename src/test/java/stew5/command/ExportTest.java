@@ -12,7 +12,6 @@ import stew5.ui.console.*;
 
 public final class ExportTest {
 
-    private static final String CMD = "export";
     private static final ResourceManager res = ResourceManager.getInstance(Command.class);
 
     @Rule
@@ -37,12 +36,12 @@ public final class ExportTest {
             TestUtils.setConnectionToEnv(conn, env);
             String dir = tmpFolder.newFolder(testName).getAbsolutePath();
             // select
-            cmd.execute(conn, p(CMD + " " + dir + "/data1.html select * from table1"));
-            cmd.execute(conn, p(CMD + " " + dir + "/data2.html HEADER select * from table1"));
+            executeCommand(cmd, conn, dir + "/data1.html select * from table1");
+            executeCommand(cmd, conn, dir + "/data2.html HEADER select * from table1");
             // find
-            cmd.execute(conn, p(CMD + " " + dir + "/tableinfo.html find table1"));
+            executeCommand(cmd, conn, dir + "/tableinfo.html find table1");
             // report
-            cmd.execute(conn, p(CMD + " " + dir + "/report.html report table1"));
+            executeCommand(cmd, conn, dir + "/report.html report table1");
         }
     }
 
@@ -56,7 +55,7 @@ public final class ExportTest {
         try (Connection conn = connection()) {
             thrown.expect(UsageException.class);
             thrown.expectMessage(res.get("usage." + cmd.getClass().getSimpleName()));
-            cmd.execute(conn, p(CMD));
+            executeCommand(cmd, conn, "");
         }
     }
 
@@ -67,7 +66,7 @@ public final class ExportTest {
         try (Connection conn = connection()) {
             thrown.expect(UsageException.class);
             thrown.expectMessage(res.get("usage." + cmd.getClass().getSimpleName()));
-            cmd.execute(conn, p(CMD + " " + path + " find"));
+            executeCommand(cmd, conn, path + " find");
         }
     }
 
@@ -78,7 +77,7 @@ public final class ExportTest {
         try (Connection conn = connection()) {
             thrown.expect(UsageException.class);
             thrown.expectMessage(res.get("usage." + cmd.getClass().getSimpleName()));
-            cmd.execute(conn, p(CMD + " " + path + " report"));
+            executeCommand(cmd, conn, path + " report");
         }
     }
 
@@ -89,7 +88,7 @@ public final class ExportTest {
         try (Connection conn = connection()) {
             thrown.expect(UsageException.class);
             thrown.expectMessage(res.get("usage." + cmd.getClass().getSimpleName()));
-            cmd.execute(conn, p(CMD + " " + path + " report -"));
+            executeCommand(cmd, conn, path + " report -");
         }
     }
 
@@ -100,7 +99,7 @@ public final class ExportTest {
         try (Connection conn = connection()) {
             thrown.expect(UsageException.class);
             thrown.expectMessage(res.get("usage." + cmd.getClass().getSimpleName()));
-            cmd.execute(conn, p(CMD + " " + path + " XXX"));
+            executeCommand(cmd, conn, path + " XXX");
         }
     }
 
@@ -112,7 +111,7 @@ public final class ExportTest {
         try (Connection conn = connection()) {
             thrown.expect(CommandException.class);
             thrown.expectMessage(Matchers.containsString(path));
-            cmd.execute(conn, p(CMD + " " + path + " select * from table1"));
+            executeCommand(cmd, conn, path + " select * from table1");
         }
     }
 
@@ -123,7 +122,7 @@ public final class ExportTest {
         try (Connection conn = connection()) {
             thrown.expect(CommandException.class);
             thrown.expectMessage(Matchers.containsString("Syntax error"));
-            cmd.execute(conn, p(CMD + " " + path + " select * frm table1")); // syntax error: frm
+            executeCommand(cmd, conn, path + " select * frm table1"); // syntax error: frm
         }
     }
 

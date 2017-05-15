@@ -10,8 +10,6 @@ import stew5.*;
 
 public final class ReportTest {
 
-    private static final String CMD = "report";
-
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
 
@@ -32,22 +30,22 @@ public final class ReportTest {
     public void testExecute() throws SQLException {
         try (Connection conn = connection()) {
             TestUtils.setConnectionToEnv(conn, env);
-            cmd.execute(conn, p(CMD + " TABLE1"));
+            executeCommand(cmd, conn, "TABLE1");
             assertThat(op.getOutputString(),
                        Matchers.containsString("[1, ID, NO, BIGINT, 19, PUBLIC]"
                                                + "[2, NAME, YES, VARCHAR, 32, PUBLIC]"));
-            cmd.execute(conn, p(CMD + " -"));
+            executeCommand(cmd, conn, "-");
             assertThat(op.getOutputString(), Matchers.endsWith("SA@jdbc:h2:mem:test"));
-            cmd.execute(conn, p(CMD + " TABLE1 FULL"));
+            executeCommand(cmd, conn, "TABLE1 FULL");
             assertThat(op.getOutputString(),
                        Matchers.containsString("[TEST, PUBLIC, TABLE1, ID, -5, BIGINT, 19, 19, 0, 10, 0, , null,"
                                                + " -5, 0, 19, 1, NO, null, null, null, null, NO, null]"
                                                + "[TEST, PUBLIC, TABLE1, NAME, 12, VARCHAR, 32, 32, 0, 10, 1, , null,"
                                                + " 12, 0, 32, 2, YES, null, null, null, null, NO, null]"));
             assertEquals("", op.getOutputString());
-            cmd.execute(conn, p(CMD + " TABLE1 PK"));
+            executeCommand(cmd, conn, "TABLE1 PK");
             assertThat(op.getOutputString(), Matchers.containsString("[TEST, PUBLIC, TABLE1, 1, ID, CONSTRAINT_9]"));
-            cmd.execute(conn, p(CMD + " TABLE1 INDEX"));
+            executeCommand(cmd, conn, "TABLE1 INDEX");
             assertThat(op.getOutputString(), Matchers.containsString("[TEST, PUBLIC, TABLE1, 1, ID, PRIMARY_KEY_9]"));
         }
     }

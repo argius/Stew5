@@ -1,6 +1,9 @@
 package stew5;
 
 import java.awt.*;
+import java.io.*;
+import java.nio.charset.*;
+import java.nio.file.*;
 import java.sql.*;
 import java.util.*;
 import java.util.List;
@@ -17,6 +20,8 @@ public final class TestUtils {
         try (Statement stmt = conn.createStatement()) {
             stmt.executeUpdate("create table table1 (id bigint primary key, name varchar(32))");
             stmt.executeUpdate("insert into table1 values (1, 'argius')");
+            stmt.executeUpdate("create table table2 (id bigint primary key, filedata blob)");
+            stmt.executeUpdate("insert into table2 (id) values (1)");
         }
         conn.commit();
         return conn;
@@ -39,6 +44,19 @@ public final class TestUtils {
     public static String getCurrentMethodString(Throwable th) {
         StackTraceElement st = th.getStackTrace()[0];
         return String.format("%s.%s", st.getClassName(), st.getMethodName());
+    }
+
+    public static List<String> readAllLines(Path path) throws IOException {
+        return Files.readAllLines(path, StandardCharsets.UTF_8);
+    }
+
+    @SafeVarargs
+    public static <T extends CharSequence> void writeLines(Path path, T... a) throws IOException {
+        Files.write(path, Arrays.asList(a), StandardCharsets.UTF_8);
+    }
+
+    public static void executeCommand(Command cmd, Connection conn, String parameterString) {
+        cmd.execute(conn, p(cmd.getClass().getSimpleName() + " " + parameterString));
     }
 
     public static boolean isInHeadless() {
