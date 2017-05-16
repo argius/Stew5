@@ -1,8 +1,8 @@
 package stew5.ui.console;
 
 import java.io.*;
-import java.sql.SQLException;
 import java.util.Map.Entry;
+import java.util.concurrent.*;
 import java.util.*;
 import stew5.*;
 import stew5.io.*;
@@ -57,9 +57,9 @@ public final class ConnectorMapEditor {
             if (confirmYes("property.tryconnect.confirm")) {
                 try {
                     Connector c = new Connector(id, props);
-                    c.getConnection();
+                    c.tryOutConnection().get();
                     printMessage("property.tryconnect.succeeded");
-                } catch (SQLException ex) {
+                } catch (InterruptedException | ExecutionException ex) {
                     printMessage("property.tryconnect.failed", ex.getMessage());
                 }
             }

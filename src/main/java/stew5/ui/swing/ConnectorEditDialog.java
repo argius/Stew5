@@ -11,6 +11,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.List;
 import java.util.Map.*;
+import java.util.concurrent.*;
 import java.util.zip.*;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -328,17 +329,10 @@ final class ConnectorEditDialog extends JDialog implements AnyActionListener {
         }
     }
 
-    void tryToConnect() throws SQLException {
-        Connection conn = createConnector().getConnection();
-        try {
-            DatabaseMetaData dbmeta = conn.getMetaData();
-            final String message = res.get("try.connect",
-                                           dbmeta.getDatabaseProductName(),
-                                           dbmeta.getDatabaseProductVersion());
-            WindowOutputProcessor.showInformationMessageDialog(this, message, "");
-        } finally {
-            conn.close();
-        }
+    void tryToConnect() throws Exception {
+        Future<String> future = createConnector().tryOutConnection();
+        final String message = future.get();
+        WindowOutputProcessor.showInformationMessageDialog(this, message, "");
     }
 
     void requestClose(boolean withSaving) {

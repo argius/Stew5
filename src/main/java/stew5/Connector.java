@@ -2,6 +2,7 @@ package stew5;
 
 import java.sql.*;
 import java.util.*;
+import java.util.concurrent.*;
 import net.argius.stew.*;
 
 /**
@@ -166,6 +167,25 @@ public final class Connector {
             throw new IllegalStateException("driver returned null");
         }
         return conn;
+    }
+
+    /**
+     * Tries out the connection of this connector.
+     * @return future object of the result message
+     */
+    public Future<String> tryOutConnection() {
+        ExecutorService executor = Executors.newSingleThreadExecutor(DaemonThreadFactory.getInstance());
+        return executor.submit(new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                try (Connection conn = getConnection()) {
+                    DatabaseMetaData dbmeta = conn.getMetaData();
+                    String productName = dbmeta.getDatabaseProductName();
+                    String productVersion = dbmeta.getDatabaseProductVersion();
+                    return ResourceManager.Default.get("i.succeeded-try-out-connect", productName, productVersion);
+                }
+            }
+        });
     }
 
     @Override
