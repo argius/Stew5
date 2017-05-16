@@ -56,10 +56,20 @@ public final class ConnectorMapEditor {
             }
             if (confirmYes("property.tryconnect.confirm")) {
                 try {
+                    final int timeoutSeconds = App.props.getAsInt("timeout.connection.tryout", 20);
                     Connector c = new Connector(id, props);
-                    c.tryOutConnection().get();
-                    printMessage("property.tryconnect.succeeded");
-                } catch (InterruptedException | ExecutionException ex) {
+                    Future<String> future = c.tryOutConnection();
+                    while (true) {
+                        try {
+                            printLine(future.get(timeoutSeconds, TimeUnit.SECONDS));
+                            break;
+                        } catch (TimeoutException ex) {
+                            if (!confirmYes(res.get("i.confirm.retry-timeout", timeoutSeconds))) {
+                                break;
+                            }
+                        }
+                    }
+                } catch (Exception ex) {
                     printMessage("property.tryconnect.failed", ex.getMessage());
                 }
             }

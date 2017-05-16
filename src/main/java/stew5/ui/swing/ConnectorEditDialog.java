@@ -25,6 +25,7 @@ final class ConnectorEditDialog extends JDialog implements AnyActionListener {
         referToOthers, searchFile, searchDriver, submit, tryToConnect, cancel
     }
 
+    private static final Logger log = Logger.getLogger(ConnectorEditDialog.class);
     private static final ResourceManager res = ResourceManager.getInstance(ConnectorEditDialog.class);
     private static final int TEXT_SIZE = 32;
     private static final Insets TEXT_MARGIN = new Insets(1, 3, 1, 0);
@@ -329,10 +330,25 @@ final class ConnectorEditDialog extends JDialog implements AnyActionListener {
         }
     }
 
-    void tryToConnect() throws Exception {
+    void tryToConnect() {
+        final int timeoutSeconds = App.props.getAsInt("timeout.connection.tryout", 15);
+        log.debug("try out connection, timeout = %d", timeoutSeconds);
         Future<String> future = createConnector().tryOutConnection();
-        final String message = future.get();
-        WindowOutputProcessor.showInformationMessageDialog(this, message, "");
+        while (true) {
+            try {
+                final String result = future.get(timeoutSeconds, TimeUnit.SECONDS);
+                WindowOutputProcessor.showInformationMessageDialog(this, result, "");
+                return;
+            } catch (TimeoutException ex) {
+                String confirmMsg = res.get("i.confirm.retry-timeout", timeoutSeconds);
+                if (showConfirmDialog(this, confirmMsg, "", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+                    return;
+                }
+            } catch (Exception ex) {
+                WindowOutputProcessor.showErrorDialog(this, ex);
+                return;
+            }
+        }
     }
 
     void requestClose(boolean withSaving) {

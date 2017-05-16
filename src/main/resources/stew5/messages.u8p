@@ -3,6 +3,7 @@
 
 i.committed=Commited.
 i.confirm.makesystemdir=System directory [{0}] does not exists. Is it OK to create directory?
+i.confirm.retry-timeout=No response for {0} seconds. Do you want to wait a little longer?
 i.connected=Connected.
 i.deleted=Deleted {0} records.
 i.directory-changed=The current directory was changed [{0}] to [{1}].
@@ -17,6 +18,10 @@ i.response-time=[ response time: {0,number,#.###} seconds ]
 i.rollbacked=Rollbacked.
 i.script-context-initialized=Script Context was initialized.
 i.selected=Selected {0} records.
+i.succeeded-try-out-connect=\
+Succeeded!\n\
+Name: {0}\n\
+Version: {1}
 i.updated=Updated {0} records.
 i.usagePrefix=usage:
 i.usage.syntax=\ stew5 [options] command
