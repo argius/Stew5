@@ -161,7 +161,7 @@ public final class App {
         } else if (opts.isHelp()) {
             OptionSet.showHelp();
         } else if (opts.isCui()) {
-            ConsoleLauncher.main(args);
+            ConsoleLauncher.main(opts);
         } else if (opts.isGui()) {
             WindowLauncher.main(args);
             return; // skip end of logging
@@ -170,7 +170,7 @@ public final class App {
         } else {
             final String v = props.get("bootstrap", props.get("boot", ""));
             if (v.equalsIgnoreCase("CUI")) {
-                ConsoleLauncher.main(args);
+                ConsoleLauncher.main(opts);
             } else if (v.equalsIgnoreCase("GUI")) {
                 WindowLauncher.main(args);
                 return; // skip end of logging
