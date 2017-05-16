@@ -100,7 +100,7 @@ public final class OptionSet {
         public OptionSet parse(String... args) throws Exception {
             OptionSet o = new OptionSet();
             CommandLineParser parser = new DefaultParser();
-            CommandLine cl = parser.parse(options, args);
+            CommandLine cl = parser.parse(options, args, true);
             o.cui = bool(cl, OPTION_CUI);
             o.gui = bool(cl, OPTION_GUI);
             o.edit = bool(cl, OPTION_EDIT);
