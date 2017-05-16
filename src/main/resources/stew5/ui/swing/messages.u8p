@@ -51,3 +51,7 @@ item.redo.mnemonic=R
 item.redo.shortcut=ctrl Y
 item.refresh=Refresh
 item.refresh.mnemonic=R
+
+# for objects which have no its own message file
+dialog.title.export=Export to file
+dialog.title.import=Import from datafile

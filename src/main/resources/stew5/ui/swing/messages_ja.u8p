@@ -40,3 +40,7 @@ item.selectAll=すべて選択
 item.undo=元に戻す
 item.redo=やり直し
 item.refresh=最新状態に更新
+
+# 自身のメッセージファイルを持っていないオブジェクト用
+dialog.title.export=ファイルにエクスポート
+dialog.title.import=データファイルからインポート

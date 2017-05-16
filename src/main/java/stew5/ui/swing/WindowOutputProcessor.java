@@ -307,7 +307,7 @@ final class WindowOutputProcessor extends JFrame implements OutputProcessor, Any
         ResultSetTableModel m = (ResultSetTableModel)tm;
         assert currentDirectory != null;
         JFileChooser fileChooser = new JFileChooser(currentDirectory);
-        fileChooser.setDialogTitle(res.get("Action.import"));
+        fileChooser.setDialogTitle(res.get("dialog.title.import"));
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fileChooser.showOpenDialog(this);
         final File file = fileChooser.getSelectedFile();
@@ -337,7 +337,7 @@ final class WindowOutputProcessor extends JFrame implements OutputProcessor, Any
     void exportTableContent() throws IOException {
         assert currentDirectory != null;
         JFileChooser fileChooser = new JFileChooser(currentDirectory);
-        fileChooser.setDialogTitle(res.get("Action.export"));
+        fileChooser.setDialogTitle(res.get("dialog.title.export"));
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fileChooser.showSaveDialog(this);
         final File file = fileChooser.getSelectedFile();
