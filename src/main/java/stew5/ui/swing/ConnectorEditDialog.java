@@ -4,17 +4,17 @@ import static java.awt.event.KeyEvent.*;
 import static javax.swing.JOptionPane.*;
 import static stew5.ui.swing.ConnectorEditDialog.ActionKey.*;
 import java.awt.*;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.*;
 import java.net.*;
 import java.sql.*;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.List;
+import java.util.Map.*;
 import java.util.zip.*;
 import javax.swing.*;
 import javax.swing.event.*;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.table.*;
 import net.argius.stew.*;
 import stew5.*;
 
@@ -89,8 +89,7 @@ final class ConnectorEditDialog extends JDialog implements AnyActionListener {
         }
         p.addComponent(new JLabel(res.get("connector.password")), false);
         p.addComponent(tPassword, true);
-        PasswordItem[] items = {new PasswordItem(PlainTextPassword.class),
-                                new PasswordItem(PbePassword.class)};
+        PasswordItem[] items = {new PasswordItem(PlainTextPassword.class), new PasswordItem(PbePassword.class)};
         cPasswordClass = new JComboBox<>(items);
         cPasswordClass.setEditable(true);
         int passwordClassSelectedIndex = -1;
@@ -108,8 +107,7 @@ final class ConnectorEditDialog extends JDialog implements AnyActionListener {
         p.addComponent(cPasswordClass, true);
         cReadOnly = new JCheckBox(res.get("connector.readonly"), connector.isReadOnly());
         p.addComponent(cReadOnly, true);
-        cUsesAutoRollback = new JCheckBox(res.get("connector.autorollback"),
-                                          connector.usesAutoRollback());
+        cUsesAutoRollback = new JCheckBox(res.get("connector.autorollback"), connector.usesAutoRollback());
         p.addComponent(cUsesAutoRollback, true);
         // setup and layout buttons
         JPanel p2 = new JPanel(new GridLayout(1, 3, 16, 0));
@@ -245,8 +243,7 @@ final class ConnectorEditDialog extends JDialog implements AnyActionListener {
         JPanel p = new JPanel(new BorderLayout());
         p.add(new JLabel(res.get("dialog.referToOthers.message")), BorderLayout.PAGE_START);
         p.add(new JScrollPane(t), BorderLayout.CENTER);
-        if (showConfirmDialog(this, p, null, OK_CANCEL_OPTION) != OK_OPTION
-            || t.getSelectedRow() < 0) {
+        if (showConfirmDialog(this, p, null, OK_CANCEL_OPTION) != OK_OPTION || t.getSelectedRow() < 0) {
             return;
         }
         final Properties selected = m.get(t.getValueAt(t.getSelectedRow(), 0)).toProperties();
@@ -352,10 +349,7 @@ final class ConnectorEditDialog extends JDialog implements AnyActionListener {
                 listener.stateChanged(event);
             }
         } else if (!newConnector.equals(this.connector)) {
-            if (showConfirmDialog(this,
-                                  res.get("i.confirm-without-register"),
-                                  null,
-                                  OK_CANCEL_OPTION) != OK_OPTION) {
+            if (showConfirmDialog(this, res.get("i.confirm-without-register"), null, OK_CANCEL_OPTION) != OK_OPTION) {
                 return;
             }
         }
