@@ -59,9 +59,14 @@ public final class ConsoleLauncher implements Launcher {
         }
         Environment env = new Environment();
         try {
-            env.setOutputProcessor(new ConsoleOutputProcessor());
-            final String about = ResourceManager.Default.get(".about", App.getVersion());
-            env.getOutputProcessor().output(about);
+            final boolean quiet = opts.isQuiet();
+            ConsoleOutputProcessor op = new ConsoleOutputProcessor();
+            op.setQuiet(quiet);
+            env.setOutputProcessor(op);
+            if (!quiet) {
+                final String about = ResourceManager.Default.get(".about", App.getVersion());
+                env.getOutputProcessor().output(about);
+            }
             String connectorName = opts.getConnecterName();
             if (!connectorName.isEmpty()) {
                 Command.invoke(env, "connect " + connectorName);

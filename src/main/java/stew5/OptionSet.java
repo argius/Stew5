@@ -15,6 +15,7 @@ public final class OptionSet {
     private boolean edit;
     private String connecterName;
     private String commandString;
+    private boolean quiet;
     private boolean showVersion;
     private boolean help;
 
@@ -59,6 +60,10 @@ public final class OptionSet {
         return connecterName;
     }
 
+    public boolean isQuiet() {
+        return quiet;
+    }
+
     public boolean isShowVersion() {
         return showVersion;
     }
@@ -78,6 +83,7 @@ public final class OptionSet {
         private static final String OPTION_GUI = "gui";
         private static final String OPTION_EDIT = "edit";
         private static final String OPTION_CONNECT = "connect";
+        private static final String OPTION_QUIET = "quiet";
         private static final String OPTION_VERSION = "version";
         private static final String OPTION_HELP = "help";
 
@@ -89,6 +95,7 @@ public final class OptionSet {
             option(OPTION_GUI);
             option(OPTION_EDIT);
             option(OPTION_CONNECT, "c", true);
+            option(OPTION_QUIET, "q");
             option(OPTION_VERSION, "v");
             option(OPTION_HELP);
         }
@@ -105,6 +112,7 @@ public final class OptionSet {
             o.gui = bool(cl, OPTION_GUI);
             o.edit = bool(cl, OPTION_EDIT);
             o.connecterName = getConnectorName(cl);
+            o.quiet = bool(cl, OPTION_QUIET);
             o.showVersion = bool(cl, OPTION_VERSION);
             o.help = bool(cl, OPTION_HELP);
             log.debug("non-option args=" + cl.getArgList());

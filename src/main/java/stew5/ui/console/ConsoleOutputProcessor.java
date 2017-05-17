@@ -13,6 +13,8 @@ public final class ConsoleOutputProcessor implements OutputProcessor {
 
     private static final int WIDTH_LIMIT = 30;
 
+    private boolean quiet;
+
     @Override
     public void output(Object o) {
         if (o instanceof ResultSetReference) {
@@ -20,9 +22,13 @@ public final class ConsoleOutputProcessor implements OutputProcessor {
         } else if (o instanceof ResultSet) {
             outputResult(new ResultSetReference((ResultSet)o, ""));
         } else if (o instanceof Prompt) {
-            System.err.print(o);
+            if (!quiet) {
+                System.err.print(o);
+            }
         } else {
-            System.out.println(o);
+            if (!quiet) {
+                System.out.println(o);
+            }
         }
     }
 
@@ -86,6 +92,10 @@ public final class ConsoleOutputProcessor implements OutputProcessor {
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);
         }
+    }
+
+    public void setQuiet(boolean quiet) {
+        this.quiet = quiet;
     }
 
     @Override
