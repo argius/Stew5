@@ -152,7 +152,7 @@ public final class App {
         try {
             opts = OptionSet.parseArguments(args);
         } catch (Exception e) {
-            System.err.printf("unexpected error: %s%n", e);
+            System.err.println(ResourceManager.Default.get("e.invalid-cli-option", e.getMessage()));
             log.info("end abnormally");
             return;
         }

@@ -36,6 +36,7 @@ e.dir-not-exists=ディレクトリ[{0}]は存在しません。
 e.fatal=致命的なエラー: {0}
 e.file-not-exists=ファイル[{0}]は存在しません。
 e.id-can-only-contain-alphanum=IDには英数字のみ使用できます: ID=[{0}]
+e.invalid-cli-option=コマンドラインオプションが正しくありません。（{0}）
 e.no-connector=コネクタ [{0}] はありません。
 e.not-connect=接続されていません。
 e.not-found=エラー: コマンド [{0}] は見つかりませんでした。

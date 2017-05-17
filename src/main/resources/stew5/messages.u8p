@@ -38,6 +38,7 @@ e.dir-not-exists=Directory[{0}] does not exist.
 e.fatal=Fatal Error: {0}
 e.file-not-exists=File[{0}] does not exist.
 e.id-can-only-contain-alphanum=ID can only contain alphanumeric characters: ID=[{0}]
+e.invalid-cli-option=Invalid command line option. ({0})
 e.no-connector=Connector [{0}] does not exist.
 e.not-connect=Not connected.
 e.not-found=Error: Command [{0}] was not found.
