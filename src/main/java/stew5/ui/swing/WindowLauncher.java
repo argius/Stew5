@@ -10,6 +10,7 @@ import java.awt.event.*;
 import java.beans.*;
 import java.io.*;
 import java.lang.Thread.*;
+import java.lang.reflect.*;
 import java.net.*;
 import java.sql.*;
 import java.util.*;
@@ -37,6 +38,7 @@ public final class WindowLauncher implements
 
     static final ResourceManager res = ResourceManager.getInstance(WindowLauncher.class);
     private static final Logger log = Logger.getLogger(WindowLauncher.class);
+    private static final String configFileName = "stew.ui.swing.window.config.xml";
 
     private static final List<WindowLauncher> instances = Collections.synchronizedList(new ArrayList<WindowLauncher>());
 
@@ -469,30 +471,60 @@ public final class WindowLauncher implements
         }
 
         void save() {
-            final File file = getFile();
-            log.debug("save Configuration to: [%s]", file.getAbsolutePath());
-            try (XMLEncoder encoder = new XMLEncoder(new FileOutputStream(file))) {
-                encoder.writeObject(this);
+            try {
+                saveTo(App.getSystemFile(configFileName));
             } catch (Exception ex) {
-                log.warn(ex);
+                log.warn(ex, "failed to save window configuration");
+            }
+        }
+
+        void saveTo(File file) throws Exception {
+            try (XMLEncoder encoder = new XMLEncoder(new FileOutputStream(file))) {
+                HashMap<String, Object> m = new HashMap<>();
+                BeanInfo beaninfo = Introspector.getBeanInfo(Configuration.class);
+                PropertyDescriptor[] desc = beaninfo.getPropertyDescriptors();
+                for (PropertyDescriptor o : desc) {
+                    String k = o.getName();
+                    Method getter = o.getReadMethod();
+                    try {
+                        m.put(k, getter.invoke(this));
+                    } catch (Exception ex) {
+                        log.warn("%s at saving configuration, key=%s", ex, k);
+                    }
+                }
+                encoder.writeObject(m);
             }
         }
 
         static Configuration load() {
-            final File file = getFile();
-            log.debug("load Configuration from: [%s]", file.getAbsolutePath());
-            if (file.exists()) {
-                try (XMLDecoder decoder = new XMLDecoder(new FileInputStream(file))) {
-                    return (Configuration)decoder.readObject();
-                } catch (Exception ex) {
-                    log.warn(ex);
-                }
+            try {
+                return loadFrom(App.getSystemFile(configFileName));
+            } catch (Exception ex) {
+                log.warn(ex, "failed to load window configuration");
+                return new Configuration();
             }
-            return new Configuration();
         }
 
-        private static File getFile() {
-            return App.getSystemFile(Configuration.class.getName() + ".xml");
+        static Configuration loadFrom(File file) throws Exception {
+            Configuration config = new Configuration();
+            try (XMLDecoder decoder = new XMLDecoder(new FileInputStream(file))) {
+                HashMap<String, Object> m = (HashMap<String, Object>)decoder.readObject();
+                BeanInfo beaninfo = Introspector.getBeanInfo(Configuration.class);
+                PropertyDescriptor[] desc = beaninfo.getPropertyDescriptors();
+                for (PropertyDescriptor o : desc) {
+                    String k = o.getName();
+                    if (k.equals("class")) {
+                        continue;
+                    }
+                    Method setter = o.getWriteMethod();
+                    try {
+                        setter.invoke(config, m.get(k));
+                    } catch (Exception ex) {
+                        log.warn("%s at loading configuration, key=%s", ex, k);
+                    }
+                }
+            }
+            return config;
         }
 
         public Dimension getSize() {
