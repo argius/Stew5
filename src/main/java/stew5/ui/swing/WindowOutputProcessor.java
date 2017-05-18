@@ -195,7 +195,7 @@ final class WindowOutputProcessor extends JFrame implements OutputProcessor, Any
             aa.doLater("focusWindow", true);
             return;
         }
-        final String prefix = "stew.ui.swing.postprocess.";
+        final String prefix = "ui.swing.postprocess.";
         final int count = App.props.getAsInt(prefix + "count", 32);
         final int range = App.props.getAsInt(prefix + "range", 2);
         final long interval = App.props.getAsInt(prefix + "interval", 50);
