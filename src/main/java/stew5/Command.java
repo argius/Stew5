@@ -10,7 +10,7 @@ import stew5.ui.OutputProcessor;
 /**
  * The skeletal implementation of the Command.
  */
-public abstract class Command {
+public abstract class Command implements AutoCloseable {
 
     protected Environment env;
     protected OutputProcessor op;
@@ -45,6 +45,7 @@ public abstract class Command {
      * Overwrite this to tear down and to do post processes.
      * @throws CommandException
      */
+    @Override
     public void close() throws CommandException {
         // empty
     }
