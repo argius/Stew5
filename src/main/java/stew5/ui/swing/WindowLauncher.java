@@ -9,18 +9,18 @@ import java.awt.*;
 import java.awt.event.*;
 import java.beans.*;
 import java.io.*;
-import java.lang.Thread.UncaughtExceptionHandler;
+import java.lang.Thread.*;
 import java.net.*;
 import java.sql.*;
 import java.util.*;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map.*;
 import java.util.Timer;
 import java.util.concurrent.*;
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.table.JTableHeader;
-import javax.swing.text.JTextComponent;
+import javax.swing.event.*;
+import javax.swing.table.*;
+import javax.swing.text.*;
 import net.argius.stew.*;
 import stew5.*;
 import stew5.ui.*;
@@ -29,11 +29,11 @@ import stew5.ui.*;
  * The Launcher implementation for GUI(Swing).
  */
 public final class WindowLauncher implements
-                                 Launcher,
-                                 FocusListener,
-                                 AnyActionListener,
-                                 Runnable,
-                                 UncaughtExceptionHandler {
+                                  Launcher,
+                                  FocusListener,
+                                  AnyActionListener,
+                                  Runnable,
+                                  UncaughtExceptionHandler {
 
     static final ResourceManager res = ResourceManager.getInstance(WindowLauncher.class);
     private static final Logger log = Logger.getLogger(WindowLauncher.class);
@@ -78,8 +78,7 @@ public final class WindowLauncher implements
         this.statusBar = new JLabel(" ");
         this.historyList = new LinkedList<>();
         this.historyIndex = 0;
-        this.executorService = Executors.newScheduledThreadPool(3,
-                                                                DaemonThreadFactory.getInstance());
+        this.executorService = Executors.newScheduledThreadPool(3, DaemonThreadFactory.getInstance());
         // [Components]
         // OutputProcessor as frame
         op.setTitle(res.get(".title"));
@@ -103,8 +102,7 @@ public final class WindowLauncher implements
         textSearchMap.put(infoTree, infoTree);
         textSearchMap.put(resultSetTable, resultSetTable);
         textSearchMap.put(resultSetTableHeader,
-                          new ResultSetTable.TableHeaderTextSearch(resultSetTable,
-                                                                   resultSetTableHeader));
+                          new ResultSetTable.TableHeaderTextSearch(resultSetTable, resultSetTableHeader));
         textSearchMap.put(textArea, textArea);
         for (Entry<JComponent, TextSearch> entry : textSearchMap.entrySet()) {
             final JComponent c = entry.getKey();
@@ -259,9 +257,7 @@ public final class WindowLauncher implements
                         cmd = "";
                     }
                     if (cmd.length() == 0) {
-                        log.debug("no action: %s, cmd=%s",
-                                  focused.getClass(),
-                                  ev.getActionCommand());
+                        log.debug("no action: %s, cmd=%s", focused.getClass(), ev.getActionCommand());
                     } else {
                         final Action action = focused.getActionMap().get(cmd);
                         log.debug("convert to plain Action Event: orig=%s", ev);
@@ -475,13 +471,8 @@ public final class WindowLauncher implements
         void save() {
             final File file = getFile();
             log.debug("save Configuration to: [%s]", file.getAbsolutePath());
-            try {
-                XMLEncoder encoder = new XMLEncoder(new FileOutputStream(file));
-                try {
-                    encoder.writeObject(this);
-                } finally {
-                    encoder.close();
-                }
+            try (XMLEncoder encoder = new XMLEncoder(new FileOutputStream(file))) {
+                encoder.writeObject(this);
             } catch (Exception ex) {
                 log.warn(ex);
             }
@@ -491,13 +482,8 @@ public final class WindowLauncher implements
             final File file = getFile();
             log.debug("load Configuration from: [%s]", file.getAbsolutePath());
             if (file.exists()) {
-                try {
-                    XMLDecoder decoder = new XMLDecoder(new FileInputStream(file));
-                    try {
-                        return (Configuration)decoder.readObject();
-                    } finally {
-                        decoder.close();
-                    }
+                try (XMLDecoder decoder = new XMLDecoder(new FileInputStream(file))) {
+                    return (Configuration)decoder.readObject();
                 } catch (Exception ex) {
                     log.warn(ex);
                 }

@@ -36,9 +36,10 @@ public final class FindTest {
             TestUtils.setConnectionToEnv(conn, env);
             executeCommand(cmd, conn, "TABLE1");
             assertThat(op.getOutputString(), Matchers.containsString("[TABLE1, TABLE, PUBLIC, TEST]"));
-            // TODO fix it
-            // executeCommand(cmd, conn, "*TABLE* INDEX"));
-            // assertThat(op.getOutputString(), Matchers.containsString("[TABLE1, TABLE, PUBLIC, TEST]"));
+            executeCommand(cmd, conn, "FUNCTION_* \"SYSTEM TABLE\"");
+            assertThat(op.getOutputString(),
+                       Matchers.containsString("[FUNCTION_ALIASES, SYSTEM TABLE, INFORMATION_SCHEMA, TEST]"
+                                               + "[FUNCTION_COLUMNS, SYSTEM TABLE, INFORMATION_SCHEMA, TEST]"));
         }
     }
 

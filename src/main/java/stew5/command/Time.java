@@ -47,17 +47,13 @@ public final class Time extends Command {
 
     private void tryOnce(Connection conn, String sql) throws SQLException {
         log.debug("tryOnce");
-        Statement stmt = prepareStatement(conn, sql);
-        try {
+        try (Statement stmt = prepareStatement(conn, sql)) {
             final long beginningTime;
             final long endTime;
             if (isSelect(sql)) {
                 beginningTime = System.currentTimeMillis();
-                ResultSet rs = executeQuery(stmt, sql);
-                try {
+                try (ResultSet rs = executeQuery(stmt, sql)) {
                     endTime = System.currentTimeMillis();
-                } finally {
-                    rs.close();
                 }
             } else {
                 beginningTime = System.currentTimeMillis();
@@ -69,16 +65,13 @@ public final class Time extends Command {
                 log.debug("      end: " + endTime);
             }
             outputMessage("Time.once", (endTime - beginningTime) / 1000f);
-        } finally {
-            stmt.close();
         }
     }
 
     private void tryManyTimes(Connection conn, String sql, int times) throws SQLException {
         log.debug("tryManyTimes");
         final boolean isSelect = isSelect(sql);
-        Statement stmt = prepareStatement(conn, sql);
-        try {
+        try (Statement stmt = prepareStatement(conn, sql)) {
             long total = 0;
             long maximum = 0;
             long minimun = Long.MAX_VALUE;
@@ -88,11 +81,8 @@ public final class Time extends Command {
                 log.trace("beginning: %d", i);
                 if (isSelect) {
                     beginningTime = System.currentTimeMillis();
-                    ResultSet rs = executeQuery(stmt, sql);
-                    try {
+                    try (ResultSet rs = executeQuery(stmt, sql)) {
                         endTime = System.currentTimeMillis();
-                    } finally {
-                        rs.close();
                     }
                 } else {
                     beginningTime = System.currentTimeMillis();
@@ -105,13 +95,7 @@ public final class Time extends Command {
                 maximum = Math.max(result, maximum);
                 minimun = Math.min(result, minimun);
             }
-            outputMessage("Time.summary",
-                          total / 1000f,
-                          total / 1000f / times,
-                          maximum / 1000f,
-                          minimun / 1000f);
-        } finally {
-            stmt.close();
+            outputMessage("Time.summary", total / 1000f, total / 1000f / times, maximum / 1000f, minimun / 1000f);
         }
     }
 

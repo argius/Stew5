@@ -7,10 +7,10 @@ import stew5.*;
 import stew5.io.*;
 
 /**
- * The Export command used to export data to a file.
+ * The Export command is used to export data to a file.
  * The data is the output of a command which is Select, Find, or Report.
- * 
- * The export type will be automatically selected by file's extension. 
+ *
+ * The export type will be automatically selected by file's extension.
  * @see Exporter
  */
 public final class Export extends Command {
@@ -43,16 +43,12 @@ public final class Export extends Command {
             final String subCommand = p2.at(0);
             final ResultSetReference ref;
             if (subCommand.equalsIgnoreCase("SELECT")) {
-                Statement stmt = prepareStatement(conn, cmd);
-                try {
+                try (Statement stmt = prepareStatement(conn, cmd)) {
                     ref = new ResultSetReference(executeQuery(stmt, cmd), "");
                     export(file, ref, withHeader);
-                } finally {
-                    stmt.close();
                 }
             } else if (subCommand.equalsIgnoreCase("FIND")) {
-                Find find = new Find();
-                try {
+                try (Find find = new Find()) {
                     find.setEnvironment(env);
                     ref = find.getResult(conn, p2);
                 } catch (UsageException ex) {
@@ -60,17 +56,12 @@ public final class Export extends Command {
                                                         getMessage("usage.Export"),
                                                         cmd,
                                                         ex.getMessage()));
-                } finally {
-                    find.close();
                 }
-                try {
+                try (ResultSet rs = ref.getResultSet()) {
                     export(file, ref, withHeader);
-                } finally {
-                    ref.getResultSet().close();
                 }
             } else if (subCommand.equalsIgnoreCase("REPORT") && !p2.at(1).equals("-")) {
-                Report report = new Report();
-                try {
+                try (Report report = new Report()) {
                     report.setEnvironment(env);
                     ref = report.getResult(conn, p2);
                 } catch (UsageException ex) {
@@ -78,13 +69,9 @@ public final class Export extends Command {
                                                         getMessage("usage.Export"),
                                                         cmd,
                                                         ex.getMessage()));
-                } finally {
-                    report.close();
                 }
-                try {
+                try (ResultSet rs = ref.getResultSet()) {
                     export(file, ref, withHeader);
-                } finally {
-                    ref.getResultSet().close();
                 }
             } else {
                 throw new UsageException(getUsage());
@@ -94,6 +81,10 @@ public final class Export extends Command {
         } catch (IOException ex) {
             throw new CommandException(ex);
         } catch (SQLException ex) {
+            SQLException next = ex.getNextException();
+            if (next != null && next != ex) {
+                log.error(next, "next exception: ");
+            }
             throw new CommandException(ex);
         }
     }
@@ -104,8 +95,7 @@ public final class Export extends Command {
     }
 
     private static void export(File file, ResultSetReference ref, boolean withHeader) throws IOException, SQLException {
-        Exporter exporter = Exporter.getExporter(file);
-        try {
+        try (Exporter exporter = Exporter.getExporter(file)) {
             ResultSet rs = ref.getResultSet();
             ColumnOrder order = ref.getOrder();
             boolean needOrderChange = order.size() > 0;
@@ -137,8 +127,6 @@ public final class Export extends Command {
                 exporter.addRow(row);
             }
             ref.setRecordCount(count);
-        } finally {
-            exporter.close();
         }
     }
 

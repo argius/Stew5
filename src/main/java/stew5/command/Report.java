@@ -21,11 +21,9 @@ public final class Report extends Command {
                 reportDBInfo(conn);
             } else {
                 ResultSetReference ref = getResult(conn, p);
-                try {
+                try (ResultSet rs = ref.getResultSet()) {
                     output(ref);
                     outputMessage("i.selected", ref.getRecordCount());
-                } finally {
-                    ref.getResultSet().close();
                 }
             }
         } catch (SQLException ex) {

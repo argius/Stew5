@@ -5,7 +5,7 @@ import java.util.*;
 import stew5.*;
 
 /**
- * The Find command used to search table names.
+ * The Find command is used to search table names.
  * @see DatabaseMetaData#getTables(String, String, String, String[])
  */
 public final class Find extends Command {
@@ -16,11 +16,9 @@ public final class Find extends Command {
     public void execute(Connection conn, Parameter p) throws CommandException {
         try {
             ResultSetReference ref = getResult(conn, p);
-            try {
+            try (ResultSet rs = ref.getResultSet()) {
                 output(ref);
                 outputMessage("i.selected", ref.getRecordCount());
-            } finally {
-                ref.getResultSet().close();
             }
         } catch (SQLException ex) {
             throw new CommandException(ex);
@@ -49,10 +47,7 @@ public final class Find extends Command {
             log.debug("catalog: " + catalogNamePattern);
             log.debug("full?  : " + isFull);
         }
-        ResultSet rs = dbmeta.getTables(catalogNamePattern,
-                                        schemaNamePattern,
-                                        tableNamePattern,
-                                        tableTypes);
+        ResultSet rs = dbmeta.getTables(catalogNamePattern, schemaNamePattern, tableNamePattern, tableTypes);
         try {
             ResultSetReference ref = new ResultSetReference(rs, p.asString());
             if (!isFull) {
@@ -64,7 +59,11 @@ public final class Find extends Command {
             }
             return ref;
         } catch (Throwable th) {
-            rs.close();
+            try {
+                rs.close();
+            } catch (Exception ex) {
+                log.warn("%s was thrown on running rs.close()", ex);
+            }
             if (th instanceof SQLException) {
                 throw (SQLException)th;
             } else if (th instanceof RuntimeException) {

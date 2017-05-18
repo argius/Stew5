@@ -8,7 +8,7 @@ import stew5.*;
 import stew5.io.*;
 
 /**
- * The Load command used to execute SQL from a file.
+ * The Load command is used to execute SQL from a file.
  *
  * This command has two mode:
  *   if it gived one argument, it will execute SQL read from a file,
@@ -45,6 +45,10 @@ public class Load extends Command {
         } catch (IOException ex) {
             throw new CommandException(ex);
         } catch (SQLException ex) {
+            SQLException next = ex.getNextException();
+            if (next != null && next != ex) {
+                log.error(next, "next exception: ");
+            }
             throw new CommandException(ex);
         }
     }
@@ -54,61 +58,46 @@ public class Load extends Command {
         if (log.isDebugEnabled()) {
             log.debug("sql : " + sql);
         }
-        Statement stmt = prepareStatement(conn, sql);
-        try {
+        try (Statement stmt = prepareStatement(conn, sql)) {
             if (isSelect(sql)) {
-                ResultSet rs = executeQuery(stmt, sql);
-                try {
+                try (ResultSet rs = executeQuery(stmt, sql)) {
                     ResultSetReference ref = new ResultSetReference(rs, sql);
                     output(ref);
                     outputMessage("i.selected", ref.getRecordCount());
-                } finally {
-                    rs.close();
                 }
             } else {
                 final int count = stmt.executeUpdate(sql);
                 outputMessage("i.proceeded", count);
             }
-        } finally {
-            stmt.close();
         }
     }
 
-    protected void loadRecord(Connection conn, File file, String tableName, boolean hasHeader) throws IOException, SQLException {
-        Importer importer = Importer.getImporter(file);
-        try {
+    protected void loadRecord(Connection conn,
+                              File file,
+                              String tableName,
+                              boolean hasHeader) throws IOException, SQLException {
+        try (Importer importer = Importer.getImporter(file)) {
             final Object[] header;
             if (hasHeader) {
                 header = importer.nextRow();
             } else {
-                Importer importer2 = Importer.getImporter(file);
-                try {
+                try (Importer importer2 = Importer.getImporter(file)) {
                     Object[] a = importer2.nextRow();
                     Arrays.fill(a, "");
                     header = a;
-                } finally {
-                    importer2.close();
                 }
             }
             final List<Object> headerList = Arrays.asList(header);
             final String columns = (hasHeader) ? String.format("(%s)", join(",", headerList)) : "";
             final List<Object> valueList = new ArrayList<>(headerList);
             Collections.fill(valueList, "?");
-            final String sql = String.format("INSERT INTO %s %s VALUES (%s)",
-                                             tableName,
-                                             columns,
-                                             join(",", valueList));
+            final String sql = String.format("INSERT INTO %s %s VALUES (%s)", tableName, columns, join(",", valueList));
             if (log.isDebugEnabled()) {
                 log.debug("SQL : " + sql);
             }
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            try {
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 insertRecords(stmt, importer);
-            } finally {
-                stmt.close();
             }
-        } finally {
-            importer.close();
         }
     }
 

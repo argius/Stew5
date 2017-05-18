@@ -84,4 +84,27 @@ public class LoadTest {
         }
     }
 
+    @Test
+    public void testIOException() throws Exception {
+        try (Connection conn = connection()) {
+            thrown.expect(CommandException.class);
+            thrown.expectCause(Matchers.any(IOException.class));
+            executeCommand(cmd, conn, "/");
+        }
+    }
+
+    @Test
+    public void testSQLException() throws Exception {
+        final String testName = TestUtils.getCurrentMethodString(new Exception());
+        File f1 = tmpFolder.newFile(testName + ".sql");
+        try (Connection conn = connection()) {
+            thrown.expect(CommandException.class);
+            thrown.expectCause(Matchers.any(SQLException.class));
+            TestUtils.setConnectionToEnv(conn, env); // for using Command.invoke
+            // SQL select file
+            TestUtils.writeLines(f1.toPath(), "select id || '+' || name from tableX");
+            executeCommand(cmd, conn, f1.getAbsolutePath());
+        }
+    }
+
 }
