@@ -38,7 +38,7 @@ public final class Connector {
     }
 
     private static Password createPasswordInstance(String className) {
-        if (className != null) {
+        if (className != null && !className.isEmpty()) {
             try {
                 return (Password)DynamicLoader.newInstance(className);
             } catch (Exception ex) {
