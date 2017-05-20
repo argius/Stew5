@@ -79,58 +79,6 @@ public final class App {
     }
 
     /**
-     * Returns this app's system property.
-     * @param key
-     * @return
-     */
-    @Deprecated // TODO Remove this, scheduled after the release of version 5.0.0-beta4
-    public static String getProperty(String key) {
-        return props.get(key.replace("net.argius.stew.", ""), "");
-    }
-
-    /**
-     * Returns this app's system property.
-     * @param key
-     * @param defaultValue
-     * @return
-     */
-    @Deprecated // TODO Remove this, scheduled after the release of version 5.0.0-beta4
-    public static String getProperty(String key, String defaultValue) {
-        return props.get(key.replace("net.argius.stew.", defaultValue));
-    }
-
-    /**
-     * Returns this app's system property as int.
-     * @param key
-     * @param defaultValue
-     * @return
-     */
-    @Deprecated // TODO Remove this, scheduled after the release of version 5.0.0-beta4
-    public static int getPropertyAsInt(String key, int defaultValue) {
-        return props.getAsInt(key.replace("net.argius.stew.", ""), defaultValue);
-    }
-
-    /**
-     * Returns this app's system property as boolean.
-     * @param key
-     * @return
-     */
-    @Deprecated // TODO Remove this, scheduled after the release of version 5.0.0-beta4
-    public static boolean getPropertyAsBoolean(String key) {
-        return props.getAsBoolean(key.replace("net.argius.stew.", ""));
-    }
-
-    /**
-     * Returns whether the property has specified key or not.
-     * @param key
-     * @return
-     */
-    @Deprecated // TODO Remove this, scheduled after the release of version 5.0.0-beta4
-    public static boolean hasProperty(String key) {
-        return props.hasKey(key.replace("net.argius.stew.", ""));
-    }
-
-    /**
      * Returns app version.
      * @return
      */
