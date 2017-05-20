@@ -28,23 +28,36 @@ final class CommandProcessor {
      * Invokes this command.
      * @param parameterString
      * @return whether this application continues or not
-     * @throws CommandException
      */
-    boolean invoke(String parameterString) throws CommandException {
-        Parameter p = new Parameter(parameterString);
+    boolean invoke(String parameterString) {
         if (parameterString.replaceFirst("^\\s+", "").startsWith(HYPHEN_E)) {
             final int offset = parameterString.indexOf(HYPHEN_E) + 2;
-            for (String s : parameterString.substring(offset).split(HYPHEN_E)) {
-                op.output(" >> " + s);
-                if (!invoke(s)) {
-                    outputMessage("w.exit-not-available-in-sequencial-command");
+            try {
+                for (String s : parameterString.substring(offset).split(HYPHEN_E)) {
+                    op.output(" >> " + s);
+                    if (!invokeWithErrorHandling(s)) {
+                        outputMessage("w.exit-not-available-in-sequencial-command");
+                    }
                 }
+            } catch (CommandException ex) {
+                op.output(res.get("e.serial-execution-interrupted", ex.getMessage()));
             }
             return true;
+        } else {
+            try {
+                return invokeWithErrorHandling(parameterString);
+            } catch (CommandException ex) {
+                // ignore
+                return true;
+            }
         }
+    }
+
+    boolean invokeWithErrorHandling(String parameterString) throws CommandException {
+        Parameter p = new Parameter(parameterString);
         final String commandName = p.at(0);
         try {
-            return invoke(commandName, new Parameter(parameterString));
+            return process(commandName, new Parameter(parameterString));
         } catch (UsageException ex) {
             outputMessage("e.usage", commandName, ex.getMessage());
         } catch (DynamicLoadingException ex) {
@@ -97,10 +110,10 @@ final class CommandProcessor {
         } catch (SQLException ex) {
             log.warn(ex);
         }
-        return true;
+        throw new CommandException(parameterString);
     }
 
-    private boolean invoke(String commandName, Parameter p) throws IOException, SQLException {
+    private boolean process(String commandName, Parameter p) throws IOException, SQLException {
         assert commandName != null;
         // do nothing if blank
         if (commandName.length() == 0) {
@@ -159,8 +172,8 @@ final class CommandProcessor {
                 log.debug("script name: %s", p1);
             }
             ScriptEngine engine = (file == null)
-                ? new ScriptEngineManager().getEngineByName(p1)
-                : new ScriptEngineManager().getEngineByExtension(FileUtilities.getExtension(file));
+                    ? new ScriptEngineManager().getEngineByName(p1)
+                    : new ScriptEngineManager().getEngineByExtension(FileUtilities.getExtension(file));
             if (engine == null) {
                 outputMessage("e.unsupported", p1);
                 return true;

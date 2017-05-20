@@ -9,6 +9,7 @@ i.wait-time=待機時間 : {0,number,0.000} 秒
 e.file-already-exists=ファイル[{0}]が存在します。
 e.failed-create-new-file=ファイル[{0}]の作成に失敗しました。
 e.failed-mkdir-filedir=ファイル[{0}]のディレクトリ作成に失敗しました。
+e.serial-execution-interrupted=連続実行は中断されました。中断されたのは[{0}]です。
 
 usage.cd=<ディレクトリ>
 usage.-f=<ファイル>

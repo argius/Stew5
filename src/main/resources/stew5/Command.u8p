@@ -9,6 +9,7 @@ i.wait-time=Waited for {0,number,0.000} seconds.
 e.file-already-exists=The file[{0}] already exists.
 e.failed-create-new-file=Failed to create the file[{0}].
 e.failed-mkdir-filedir=Failed to create dir of the file[{0}].
+e.serial-execution-interrupted=Serial execution has been interrupted at [{0}]. 
 
 usage.cd=<directory>
 usage.-f=<file>
