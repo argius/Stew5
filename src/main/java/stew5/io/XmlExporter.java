@@ -90,7 +90,7 @@ public final class XmlExporter extends Exporter {
     }
 
     @Override
-    public void addRow(Object[] values) throws IOException {
+    public void addRow(Object... values) throws IOException {
         ensureOpen0();
         try {
             JAXBContext jc = JAXBContext.newInstance(XmlRowEntity.class);

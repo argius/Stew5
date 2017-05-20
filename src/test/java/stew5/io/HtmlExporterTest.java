@@ -16,8 +16,8 @@ public final class HtmlExporterTest {
     public void testHtmlExporter() throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (HtmlExporter exporter = new HtmlExporter(bos, "")) {
-            exporter.addHeader(new String[]{"name", "number"});
-            exporter.addRow(new String[]{"aaa", "123"});
+            exporter.addHeader("name", "number");
+            exporter.addRow("aaa", "123");
         }
         String html = bos.toString("UTF-8").replaceAll("[\r\n]", "");
         assertTrue("actual: "

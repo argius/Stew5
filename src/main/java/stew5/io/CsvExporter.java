@@ -30,7 +30,7 @@ public final class CsvExporter extends Exporter {
     }
 
     @Override
-    public void addRow(Object[] values) throws IOException {
+    public void addRow(Object... values) throws IOException {
         ensureOpen();
         csv.printRecord(values);
     }

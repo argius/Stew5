@@ -74,7 +74,7 @@ public final class SimpleExporter extends Exporter {
     }
 
     @Override
-    public void addRow(Object[] values) throws IOException {
+    public void addRow(Object... values) throws IOException {
         ensureOpen();
         for (int i = 0; i < values.length; i++) {
             Object o = values[i];

@@ -103,7 +103,7 @@ public final class HtmlExporter extends Exporter {
     }
 
     @Override
-    public void addRow(Object[] values) throws IOException {
+    public void addRow(Object... values) throws IOException {
         ensureOpen0();
         out.println("<tr>");
         for (Object o : values) {

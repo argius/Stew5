@@ -38,7 +38,7 @@ public abstract class Exporter implements AutoCloseable {
      * @param header
      * @throws IOException a header was already written, or another I/O error
      */
-    public void addHeader(Object[] header) throws IOException {
+    public void addHeader(Object... header) throws IOException {
         ensureOpen();
         if (wasWrittenHeader) {
             throw new IOException("header was already written");
@@ -100,6 +100,6 @@ public abstract class Exporter implements AutoCloseable {
      * @throws IOException
      */
 
-    public abstract void addRow(Object[] values) throws IOException;
+    public abstract void addRow(Object... values) throws IOException;
 
 }

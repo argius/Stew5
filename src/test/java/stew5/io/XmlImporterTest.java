@@ -25,7 +25,7 @@ public final class XmlImporterTest {
             prepareTable(conn);
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             try (ResultSet rs = stmt.executeQuery(sql); XmlExporter exp = new XmlExporter(bos)) {
-                exp.addHeader(new String[]{"1x", "2", "3y", "4z"});
+                exp.addHeader("1x", "2", "3y", "4z");
                 while (rs.next()) {
                     List<Object> a = new ArrayList<>();
                     for (int i = 0; i < 4; i++) {

@@ -23,11 +23,11 @@ public final class XmlExporterTest {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         Date time = new Date(5000000 * 1000L);
         try (XmlExporter exporter = new XmlExporter(bos)) {
-            exporter.addHeader(a("name", "number"));
-            exporter.addRow(a("test1", "567"));
-            exporter.addRow(a("test2", "890 "));
-            exporter.addRow(a("nulltest", null));
-            exporter.addRow(a("timetest", time));
+            exporter.addHeader("name", "number");
+            exporter.addRow("test1", "567");
+            exporter.addRow("test2", "890 ");
+            exporter.addRow("nulltest", null);
+            exporter.addRow("timetest", time);
         }
         // [Validation]
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);

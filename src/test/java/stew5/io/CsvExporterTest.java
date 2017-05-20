@@ -20,8 +20,8 @@ public final class CsvExporterTest {
     public void testAddRow() throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (CsvExporter exporter = new CsvExporter(bos, ',')) {
-            exporter.addHeader(a("name", "number"));
-            exporter.addRow(a("abc", "123"));
+            exporter.addHeader("name", "number");
+            exporter.addRow("abc", "123");
         }
         assertEquals("name,number%nabc,123%n", bos.toString().replaceAll("\r?\n", "%n"));
     }
@@ -31,11 +31,6 @@ public final class CsvExporterTest {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         CsvExporter exporter = new CsvExporter(bos);
         exporter.close();
-    }
-
-    @SuppressWarnings("unchecked")
-    static <T> T[] a(T... a) {
-        return a;
     }
 
 }
