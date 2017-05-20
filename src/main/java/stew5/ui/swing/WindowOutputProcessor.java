@@ -253,7 +253,7 @@ final class WindowOutputProcessor extends JFrame implements OutputProcessor, Any
     final class PostProcessAction extends JPanel {
         int sign = -1;
         byte[] alpha;
-        Frame frame = getRootFrame();
+        Frame frame = WindowOutputProcessor.this;
         PostProcessAction(byte... alpha) {
             this.alpha = alpha;
         }
@@ -262,7 +262,7 @@ final class WindowOutputProcessor extends JFrame implements OutputProcessor, Any
         }
         void shakeWindow(int range) {
             sign *= -1;
-            setLocation(getX() + range * sign, getY() + 0);
+            frame.setLocation(frame.getX() + range * sign, frame.getY() + 0);
         }
         void showComponent(JComponent c) {
             requestFocusToTextAreaInWindow();
