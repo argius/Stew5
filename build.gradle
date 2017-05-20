@@ -17,7 +17,7 @@ dependencies {
     testCompile 'joda-time:joda-time:2.9.9'
 }
 
-version = '5.0.0-beta4'
+version = '5.0.0-beta5-SNAPSHOT'
 
 sourceCompatibility = '1.7'
 targetCompatibility = '1.7'
