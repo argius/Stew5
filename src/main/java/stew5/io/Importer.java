@@ -8,7 +8,8 @@ import java.io.*;
 public abstract class Importer implements AutoCloseable {
 
     protected InputStream is;
-    protected boolean wasReadHeader;
+    protected boolean isHeaderReady;
+    protected Object[] header;
 
     private boolean closed;
 
@@ -18,7 +19,8 @@ public abstract class Importer implements AutoCloseable {
      */
     protected Importer(InputStream is) {
         this.is = is;
-        this.wasReadHeader = false;
+        this.isHeaderReady = false;
+        this.header = new Object[0];
         this.closed = false;
     }
 
@@ -39,8 +41,10 @@ public abstract class Importer implements AutoCloseable {
      */
     public Object[] getHeader() throws IOException {
         ensureOpen();
-        Object[] header = readHeader();
-        wasReadHeader = true;
+        if (!isHeaderReady) {
+            this.header = readHeader();
+            isHeaderReady = true;
+        }
         return header;
     }
 
