@@ -1,10 +1,9 @@
 package stew5.ui.swing;
 
 import java.awt.*;
-import java.util.Map.Entry;
-
+import java.util.Map.*;
 import javax.swing.*;
-import javax.swing.UIDefaults.ActiveValue;
+import javax.swing.UIDefaults.*;
 import javax.swing.plaf.*;
 import javax.swing.plaf.basic.*;
 
@@ -12,14 +11,10 @@ final class FontControlLookAndFeel extends BasicLookAndFeel {
 
     private static final LookAndFeel BASE = UIManager.getLookAndFeel();
 
-    private final String fontFamily;
-    private final int fontStyleMask;
-    private final double sizeRate;
+    private final RelativeFont relativeFont;
 
     FontControlLookAndFeel(String fontFamily, int fontStyleMask, double sizeRate) {
-        this.fontFamily = fontFamily;
-        this.fontStyleMask = fontStyleMask;
-        this.sizeRate = sizeRate;
+        this.relativeFont = new RelativeFont(fontFamily, fontStyleMask, sizeRate);
     }
 
     static void change(String fontFamily, int fontStyleMask, double sizeRate) {
@@ -37,11 +32,10 @@ final class FontControlLookAndFeel extends BasicLookAndFeel {
             Object key = entry.getKey();
             if (String.valueOf(key).endsWith("font")) {
                 Object value = entry.getValue();
-                if (value instanceof UIDefaults.ActiveValue) {
-                    entry.setValue(new FontControlActiveValue((ActiveValue)value,
-                                                              fontFamily,
-                                                              fontStyleMask,
-                                                              sizeRate));
+                if (value instanceof ActiveValue) {
+                    entry.setValue(new FontControlActiveValue((ActiveValue)value, relativeFont));
+                } else if (value instanceof LazyValue) {
+                    entry.setValue(new FontControlLazyValue((LazyValue)value, relativeFont));
                 }
             }
         }
@@ -73,33 +67,63 @@ final class FontControlLookAndFeel extends BasicLookAndFeel {
         return BASE.isSupportedLookAndFeel();
     }
 
-    private static final class FontControlActiveValue implements ActiveValue {
+    private static final class RelativeFont {
 
-        private final ActiveValue base;
         private final String fontFamily;
         private final int fontStyleMask;
         private final double sizeRate;
 
-        FontControlActiveValue(ActiveValue base,
-                               String fontFamily,
-                               int fontStyleMask,
-                               double sizeRate) {
-            this.base = base;
+        RelativeFont(String fontFamily, int fontStyleMask, double sizeRate) {
             this.fontFamily = fontFamily;
             this.fontStyleMask = fontStyleMask;
             this.sizeRate = sizeRate;
         }
 
-        @Override
-        public Object createValue(UIDefaults table) {
-            Object o = base.createValue(table);
+        Object wrapIfObjectIsFont(Object o) {
             if (o instanceof Font) {
-                Font font = (Font)o;
-                final int style = font.getStyle() & fontStyleMask;
-                final int size = (int)(font.getSize() * sizeRate);
-                return new FontUIResource(fontFamily, style, size);
+                return createFontUIResource((Font)o);
             }
             return o;
+        }
+
+        FontUIResource createFontUIResource(Font font) {
+            final int style = font.getStyle() & fontStyleMask;
+            final int size = (int)(font.getSize() * sizeRate);
+            return new FontUIResource(fontFamily, style, size);
+        }
+
+    }
+
+    private static final class FontControlActiveValue implements ActiveValue {
+
+        private final ActiveValue base;
+        private final RelativeFont relativeFont;
+
+        FontControlActiveValue(ActiveValue base, RelativeFont relativeFont) {
+            this.base = base;
+            this.relativeFont = relativeFont;
+        }
+
+        @Override
+        public Object createValue(UIDefaults table) {
+            return relativeFont.wrapIfObjectIsFont(base.createValue(table));
+        }
+
+    }
+
+    private static final class FontControlLazyValue implements LazyValue {
+
+        private final LazyValue base;
+        private final RelativeFont relativeFont;
+
+        FontControlLazyValue(LazyValue base, RelativeFont relativeFont) {
+            this.base = base;
+            this.relativeFont = relativeFont;
+        }
+
+        @Override
+        public Object createValue(UIDefaults table) {
+            return relativeFont.wrapIfObjectIsFont(base.createValue(table));
         }
 
     }
