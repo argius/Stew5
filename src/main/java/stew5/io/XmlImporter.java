@@ -3,6 +3,7 @@ package stew5.io;
 import java.io.*;
 import java.util.*;
 import javax.xml.bind.*;
+import javax.xml.datatype.*;
 import javax.xml.stream.*;
 import javax.xml.stream.events.*;
 
@@ -84,15 +85,22 @@ public final class XmlImporter extends Importer {
             if (!xer.hasNext()) {
                 return new Object[0];
             }
-            List<Object> a = new ArrayList<>();
             JAXBContext jc = JAXBContext.newInstance(XmlRowEntity.class);
             Unmarshaller unmarshaller = jc.createUnmarshaller();
             XmlRowEntity o = (XmlRowEntity)unmarshaller.unmarshal(xer);
-            a.addAll(o.getValues());
-            return a.toArray();
+            return convert(o.getValues());
         } catch (JAXBException | XMLStreamException | RuntimeException ex) {
             throw new IOException(ex);
         }
+    }
+
+    static Object[] convert(List<?> row) {
+        Object[] a = new Object[row.size()];
+        for (int i = 0; i < a.length; i++) {
+            final Object o = row.get(i);
+            a[i] = (o instanceof XMLGregorianCalendar) ? ((XMLGregorianCalendar)o).toGregorianCalendar().getTime() : o;
+        }
+        return a;
     }
 
     static boolean isElementNameEquals(XMLEvent evt, String name) {

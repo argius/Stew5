@@ -5,7 +5,7 @@ import static stew5.TestUtils.*;
 import java.io.*;
 import java.sql.*;
 import java.util.*;
-import javax.xml.datatype.*;
+import java.util.Date;
 import javax.xml.namespace.*;
 import javax.xml.stream.*;
 import org.junit.*;
@@ -42,14 +42,14 @@ public final class XmlImporterTest {
                 assertEquals(4, row.length);
                 assertEquals(1L, row[0]);
                 assertEquals("abcde123", row[1]);
-                assertEquals(1200000000000L, ((XMLGregorianCalendar)row[2]).toGregorianCalendar().getTimeInMillis());
+                assertEquals(1200000000000L, ((Date)row[2]).getTime());
                 assertEquals("LOB1", row[3]);
                 // second row
                 row = imp.nextRow();
                 assertEquals(4, row.length);
                 assertEquals(2L, row[0]);
                 assertEquals("fgh456", row[1]);
-                assertEquals(1300000000000L, ((XMLGregorianCalendar)row[2]).toGregorianCalendar().getTimeInMillis());
+                assertEquals(1300000000000L, ((Date)row[2]).getTime());
                 assertEquals("LOB2", row[3]);
             }
         }
