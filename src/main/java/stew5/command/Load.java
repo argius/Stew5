@@ -79,7 +79,7 @@ public class Load extends Command {
         try (Importer importer = Importer.getImporter(file)) {
             final Object[] header;
             if (hasHeader) {
-                header = importer.nextRow();
+                header = importer.getHeader();
             } else {
                 try (Importer importer2 = Importer.getImporter(file)) {
                     Object[] a = importer2.nextRow();
