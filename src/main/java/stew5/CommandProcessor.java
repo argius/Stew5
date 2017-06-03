@@ -191,11 +191,8 @@ final class CommandProcessor {
                     engine.eval(p.after(2));
                 } else {
                     engine.put(ScriptEngine.FILENAME, file.getAbsolutePath());
-                    Reader r = new FileReader(file);
-                    try {
+                    try (Reader r = new FileReader(file)) {
                         engine.eval(r);
-                    } finally {
-                        r.close();
                     }
                 }
             } catch (Exception ex) {
@@ -278,7 +275,7 @@ final class CommandProcessor {
         if (commandName.equals("-")) {
             return invoke("report -");
         }
-        // runtime informations
+        // runtime information
         if (commandName.equals("?")) {
             if (p.has(1)) {
                 for (final String k : p.asArray()) {
@@ -371,8 +368,7 @@ final class CommandProcessor {
         } catch (DynamicLoadingException ex) {
             c = Command.isSelect(p.asString()) ? Select.class : UpdateAndOthers.class;
         }
-        Command command = DynamicLoader.newInstance(c);
-        try {
+        try (Command command = DynamicLoader.newInstance(c)) {
             Connector connector = env.getCurrentConnector();
             if (connector.isReadOnly() && !command.isReadOnly()) {
                 outputMessage("e.readonly");
@@ -383,10 +379,8 @@ final class CommandProcessor {
             log.debug(p);
             command.initialize();
             command.execute(conn, p);
-        } finally {
-            command.close();
+            log.info("command: %s end", command);
         }
-        log.info("command: %s end", command);
     }
 
     /**
@@ -407,13 +401,8 @@ final class CommandProcessor {
         @Override
         public final void execute(Connection conn, Parameter p) throws CommandException {
             final String rawString = p.asString();
-            try {
-                Statement stmt = prepareStatement(conn, rawString);
-                try {
-                    execute(stmt, rawString);
-                } finally {
-                    stmt.close();
-                }
+            try (Statement stmt = prepareStatement(conn, rawString)) {
+                execute(stmt, rawString);
             } catch (SQLException ex) {
                 throw new CommandException(ex);
             }
@@ -440,14 +429,11 @@ final class CommandProcessor {
         @Override
         public void execute(Statement stmt, String rawString) throws SQLException {
             final long startTime = System.currentTimeMillis();
-            ResultSet rs = executeQuery(stmt, rawString);
-            try {
+            try (ResultSet rs = executeQuery(stmt, rawString)) {
                 outputMessage("i.response-time", (System.currentTimeMillis() - startTime) / 1000f);
                 ResultSetReference ref = new ResultSetReference(rs, rawString);
                 output(ref);
                 outputMessage("i.selected", ref.getRecordCount());
-            } finally {
-                rs.close();
             }
         }
 
