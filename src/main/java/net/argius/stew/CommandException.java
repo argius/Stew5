@@ -1,4 +1,4 @@
-package stew5;
+package net.argius.stew;
 
 /**
  * Thrown when an error occurred while Command is running.

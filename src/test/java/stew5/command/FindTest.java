@@ -6,6 +6,7 @@ import java.sql.*;
 import org.hamcrest.*;
 import org.junit.*;
 import org.junit.rules.*;
+import net.argius.stew.*;
 import stew5.*;
 
 public final class FindTest {

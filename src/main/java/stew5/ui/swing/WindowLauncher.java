@@ -795,7 +795,7 @@ public final class WindowLauncher implements
                 public void run() {
                     Connection conn = env.getCurrentConnection();
                     long time = System.currentTimeMillis();
-                    if (!Command.invoke(env, cmd)) {
+                    if (!Commands.invoke(env, cmd)) {
                         exit();
                     }
                     if (infoTree.isEnabled()) {

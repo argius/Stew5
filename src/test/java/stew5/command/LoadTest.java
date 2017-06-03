@@ -7,6 +7,7 @@ import java.sql.*;
 import org.hamcrest.*;
 import org.junit.*;
 import org.junit.rules.*;
+import net.argius.stew.*;
 import stew5.*;
 import stew5.io.*;
 
@@ -34,7 +35,7 @@ public class LoadTest {
         File f1 = tmpFolder.newFile(testName + ".sql");
         File f2 = tmpFolder.newFile(testName + ".csv");
         try (Connection conn = connection()) {
-            TestUtils.setConnectionToEnv(conn, env); // for using Command.invoke
+            TestUtils.setConnectionToEnv(conn, env); // for using Commands.invoke
             // SQL select file
             TestUtils.writeLines(f1.toPath(), "select id || '+' || name from table1");
             executeCommand(cmd, conn, f1.getAbsolutePath());
@@ -43,13 +44,13 @@ public class LoadTest {
             TestUtils.writeLines(f2.toPath(), "2,Bob", "3,Chris");
             executeCommand(cmd, conn, f2.getAbsolutePath() + " table1");
             op.clearBuffer();
-            Command.invoke(env, "select id || '+' || name from table1 order by id");
+            Commands.invoke(env, "select id || '+' || name from table1 order by id");
             assertThat(op.getOutputString(), Matchers.containsString("[1+argius][2+Bob][3+Chris]"));
             // SQL update file
             TestUtils.writeLines(f1.toPath(), "update table1 set name='Davis' where id=3");
             executeCommand(cmd, conn, f1.getAbsolutePath());
             op.clearBuffer();
-            Command.invoke(env, "select id || '+' || name from table1 order by id");
+            Commands.invoke(env, "select id || '+' || name from table1 order by id");
             assertThat(op.getOutputString(), Matchers.containsString("[1+argius][2+Bob][3+Davis]"));
             conn.rollback();
         }
@@ -61,12 +62,12 @@ public class LoadTest {
         Load cmdLoad = (Load)cmd;
         File f = tmpFolder.newFile(testName + ".csv");
         try (Connection conn = connection()) {
-            TestUtils.setConnectionToEnv(conn, env); // for using Command.invoke
+            TestUtils.setConnectionToEnv(conn, env); // for using Commands.invoke
             TestUtils.writeLines(f.toPath(), "2,Bob", "3,Chris");
             PreparedStatement stmt = conn.prepareStatement("insert into table1 values (?, ?)");
             cmdLoad.insertRecords(stmt, Importer.getImporter(f));
             op.clearBuffer();
-            Command.invoke(env, "select id || '+' || name from table1 order by id");
+            Commands.invoke(env, "select id || '+' || name from table1 order by id");
             assertThat(op.getOutputString(), Matchers.containsString("[1+argius][2+Bob][3+Chris]"));
             // in case of error
             TestUtils.writeLines(f.toPath(), "1");
@@ -100,7 +101,7 @@ public class LoadTest {
         try (Connection conn = connection()) {
             thrown.expect(CommandException.class);
             thrown.expectCause(Matchers.any(SQLException.class));
-            TestUtils.setConnectionToEnv(conn, env); // for using Command.invoke
+            TestUtils.setConnectionToEnv(conn, env); // for using Commands.invoke
             // SQL select file
             TestUtils.writeLines(f1.toPath(), "select id || '+' || name from tableX");
             executeCommand(cmd, conn, f1.getAbsolutePath());

@@ -7,6 +7,7 @@ import java.sql.*;
 import org.hamcrest.*;
 import org.junit.*;
 import org.junit.rules.*;
+import net.argius.stew.*;
 import stew5.*;
 import stew5.io.*;
 
@@ -33,18 +34,18 @@ public class ImportTest {
         final String testName = TestUtils.getCurrentMethodString(new Exception());
         File f = tmpFolder.newFile(testName + ".csv");
         try (Connection conn = connection()) {
-            TestUtils.setConnectionToEnv(conn, env); // for using Command.invoke
+            TestUtils.setConnectionToEnv(conn, env); // for using Commands.invoke
             // without header
             TestUtils.writeLines(f.toPath(), "2,Bob", "3,Chris");
             executeCommand(cmd, conn, f.getAbsolutePath() + " table1");
             op.clearBuffer();
-            Command.invoke(env, "select id || '+' || name from table1 order by id");
+            Commands.invoke(env, "select id || '+' || name from table1 order by id");
             assertThat(op.getOutputString(), Matchers.containsString("[1+argius][2+Bob][3+Chris]"));
             // with header
             TestUtils.writeLines(f.toPath(), "id", "4");
             executeCommand(cmd, conn, f.getAbsolutePath() + " table1 HEADER");
             op.clearBuffer();
-            Command.invoke(env, "select id || '+' || IFNULL(name, 'null') from table1 order by id");
+            Commands.invoke(env, "select id || '+' || IFNULL(name, 'null') from table1 order by id");
             assertThat(op.getOutputString(), Matchers.containsString("[1+argius][2+Bob][3+Chris][4+null]"));
             conn.rollback();
         }
@@ -56,12 +57,12 @@ public class ImportTest {
         Import cmdImport = (Import)cmd;
         File f = tmpFolder.newFile(testName + ".csv");
         try (Connection conn = connection()) {
-            TestUtils.setConnectionToEnv(conn, env); // for using Command.invoke
+            TestUtils.setConnectionToEnv(conn, env); // for using Commands.invoke
             TestUtils.writeLines(f.toPath(), "2,Bob", "3,Chris");
             PreparedStatement stmt = conn.prepareStatement("insert into table1 values (?, ?)");
             cmdImport.insertRecords(stmt, Importer.getImporter(f));
             op.clearBuffer();
-            Command.invoke(env, "select id || '+' || name from table1 order by id");
+            Commands.invoke(env, "select id || '+' || name from table1 order by id");
             assertThat(op.getOutputString(), Matchers.containsString("[1+argius][2+Bob][3+Chris]"));
             // in case of error
             TestUtils.writeLines(f.toPath(), "X,Y,Z");

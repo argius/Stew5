@@ -4,6 +4,7 @@ import static stew5.App.*;
 import java.io.*;
 import java.sql.*;
 import javax.script.*;
+import net.argius.stew.*;
 import stew5.ui.*;
 
 /**

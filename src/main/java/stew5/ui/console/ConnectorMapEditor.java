@@ -3,6 +3,7 @@ package stew5.ui.console;
 import java.io.*;
 import java.util.Map.Entry;
 import java.util.concurrent.*;
+import net.argius.stew.*;
 import java.util.*;
 import stew5.*;
 import stew5.io.*;

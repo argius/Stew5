@@ -45,7 +45,7 @@ public final class ConsoleLauncher implements Launcher {
             if (String.valueOf(line).trim().equals("--edit")) {
                 ConnectorMapEditor.invoke();
                 env.updateConnectorMap();
-            } else if (Command.invoke(env, line) == END) {
+            } else if (Commands.invoke(env, line) == END) {
                 break;
             }
         }
@@ -69,12 +69,12 @@ public final class ConsoleLauncher implements Launcher {
             }
             String connectorName = opts.getConnecterName();
             if (!connectorName.isEmpty()) {
-                Command.invoke(env, "connect " + connectorName);
+                Commands.invoke(env, "connect " + connectorName);
             }
             String commandString = opts.getCommandString();
             if (!commandString.isEmpty()) {
-                Command.invoke(env, commandString);
-                Command.invoke(env, "disconnect");
+                Commands.invoke(env, commandString);
+                Commands.invoke(env, "disconnect");
             } else {
                 Launcher o = new ConsoleLauncher();
                 o.launch(env);

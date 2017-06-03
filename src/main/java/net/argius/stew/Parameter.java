@@ -1,4 +1,4 @@
-package stew5;
+package net.argius.stew;
 
 import java.util.*;
 

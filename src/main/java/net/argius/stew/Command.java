@@ -1,9 +1,10 @@
-package stew5;
+package net.argius.stew;
 
 import java.io.*;
 import java.nio.channels.Channels;
 import java.sql.*;
 import java.util.Scanner;
+import stew5.*;
 import stew5.io.FileUtilities;
 import stew5.ui.OutputProcessor;
 
@@ -56,10 +57,11 @@ public abstract class Command implements AutoCloseable {
      * @param parameterString
      * @return true if it continues, or false if exit this application
      * @throws CommandException
+     * @deprecated use {@link Commands#invoke}
      */
+    @Deprecated // Remove this, scheduled till the release of version 5.0.0-RC1
     public static boolean invoke(Environment env, String parameterString) throws CommandException {
-        CommandProcessor processor = new CommandProcessor(env);
-        return processor.invoke(parameterString);
+        return Commands.invoke(env, parameterString);
     }
 
     /**
@@ -177,7 +179,7 @@ public abstract class Command implements AutoCloseable {
      * @param sql
      * @return
      */
-    protected static boolean isSelect(String sql) {
+    public static boolean isSelect(String sql) {
         try (Scanner scanner = new Scanner(sql)) {
             while (scanner.hasNextLine()) {
                 final String line = scanner.nextLine();
