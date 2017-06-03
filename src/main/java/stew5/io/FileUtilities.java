@@ -1,6 +1,7 @@
 package stew5.io;
 
 import java.io.*;
+import java.nio.channels.*;
 
 /**
  * Utility methods for files.
@@ -80,6 +81,19 @@ public final class FileUtilities {
             if (!file.mkdirs() || !file.isDirectory()) {
                 throw new IOException("can't make directory: " + file);
             }
+        }
+    }
+
+    /**
+     * Returns the string that read from file.
+     * @param file
+     * @return
+     * @throws IOException
+     */
+    public static String readAllBytesAsString(File file) throws IOException {
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream(); FileInputStream fis = new FileInputStream(file)) {
+            fis.getChannel().transferTo(0, file.length(), Channels.newChannel(bos));
+            return bos.toString();
         }
     }
 

@@ -145,7 +145,7 @@ final class CommandProcessor {
                 throw new UsageException(res.get("usage.-f"));
             }
             log.debug("-f %s", file.getAbsolutePath());
-            invoke(String.format("%s%s", Command.readFileAsString(file), p.after(2)));
+            invoke(String.format("%s%s", FileUtilities.readAllBytesAsString(file), p.after(2)));
             return true;
         }
         // script

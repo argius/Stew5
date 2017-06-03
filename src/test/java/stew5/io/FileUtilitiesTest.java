@@ -61,4 +61,13 @@ public final class FileUtilitiesTest {
         makeDirectory(file);
     }
 
+    @Test
+    public void testReadAllBytesAsString() throws IOException {
+        final String testName = TestUtils.getCurrentMethodString(new Exception());
+        File dir = tmpFolder.newFolder(testName);
+        File f1 = new File(dir, "test1.sql");
+        TestUtils.writeLines(f1.toPath(), "select", "*", "from", "table1");
+        assertEquals("select%n*%nfrom%ntable1%n", readAllBytesAsString(f1).replaceAll("\r?\n", "%n"));
+    }
+
 }

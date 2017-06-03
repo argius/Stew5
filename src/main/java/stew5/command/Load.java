@@ -54,7 +54,7 @@ public class Load extends Command {
     }
 
     private void loadSql(Connection conn, File file) throws IOException, SQLException {
-        final String sql = readFileAsString(file);
+        final String sql = FileUtilities.readAllBytesAsString(file);
         if (log.isDebugEnabled()) {
             log.debug("sql : " + sql);
         }

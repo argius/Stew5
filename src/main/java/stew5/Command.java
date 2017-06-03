@@ -200,6 +200,7 @@ public abstract class Command implements AutoCloseable {
      * @return
      * @throws IOException
      */
+    @Deprecated
     protected static String readFileAsString(File file) throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         FileInputStream fis = new FileInputStream(file);
