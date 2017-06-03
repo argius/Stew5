@@ -3,7 +3,7 @@ package stew5.io;
 import java.io.*;
 
 /**
- * Path is an extended java.util.File.
+ * Utility methods for files.
  */
 public final class FileUtilities {
 
