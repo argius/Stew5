@@ -27,6 +27,7 @@ public final class Environment {
     private long connectorTimestamp;
     private AliasMap aliasMap;
     private ScriptContext scriptContext;
+    private int exitStatus;
 
     private Environment(ConnectorMap connectorMap, File currentDirectory) {
         this.connectorMap = connectorMap;
@@ -265,6 +266,14 @@ public final class Environment {
 
     public ScriptContext getScriptContext() {
         return scriptContext;
+    }
+
+    public int getExitStatus() {
+        return exitStatus;
+    }
+
+    public void setExitStatus(int exitStatus) {
+        this.exitStatus = exitStatus;
     }
 
 }

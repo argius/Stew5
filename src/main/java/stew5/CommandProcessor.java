@@ -41,6 +41,7 @@ final class CommandProcessor {
                     }
                 }
             } catch (CommandException ex) {
+                env.setExitStatus(1);
                 op.output(res.get("e.serial-execution-interrupted", ex.getMessage()));
             }
             return true;
@@ -48,7 +49,8 @@ final class CommandProcessor {
             try {
                 return invokeWithErrorHandling(parameterString);
             } catch (CommandException ex) {
-                // ignore
+                // ignore Exception
+                env.setExitStatus(1);
                 return true;
             }
         }

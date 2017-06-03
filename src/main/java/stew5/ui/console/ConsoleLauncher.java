@@ -52,10 +52,10 @@ public final class ConsoleLauncher implements Launcher {
         log.info("end");
     }
 
-    public static void main(OptionSet opts) {
+    public static int main(OptionSet opts) {
         if (opts.isShowVersion()) {
             System.out.println("Stew " + App.getVersion());
-            return;
+            return 0;
         }
         Environment env = new Environment();
         try {
@@ -82,6 +82,7 @@ public final class ConsoleLauncher implements Launcher {
         } finally {
             env.release();
         }
+        return env.getExitStatus();
     }
 
     /** main **/

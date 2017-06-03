@@ -92,36 +92,30 @@ public final class App {
         System.out.println(res.get("usage.message"));
     }
 
-    /** main **/
-    public static void main(String... args) {
-        log.info("start (version: %s)", getVersion());
-        log.debug("args=%s", Arrays.asList(args));
+    static int run(String... args) {
         OptionSet opts;
         try {
             opts = OptionSet.parseArguments(args);
         } catch (Exception e) {
             System.err.println(ResourceManager.Default.get("e.invalid-cli-option", e.getMessage()));
-            log.info("end abnormally");
-            return;
+            return 1;
         }
         if (opts.isShowVersion()) {
             System.out.println("Stew " + App.getVersion());
         } else if (opts.isHelp()) {
             OptionSet.showHelp();
         } else if (opts.isCui()) {
-            ConsoleLauncher.main(opts);
+            return ConsoleLauncher.main(opts);
         } else if (opts.isGui()) {
             WindowLauncher.main(args);
-            return; // skip end of logging
         } else if (opts.isEdit()) {
             ConnectorMapEditor.main(args);
         } else {
             final String v = props.get("bootstrap", props.get("boot", ""));
             if (v.equalsIgnoreCase("CUI")) {
-                ConsoleLauncher.main(opts);
+                return ConsoleLauncher.main(opts);
             } else if (v.equalsIgnoreCase("GUI")) {
                 WindowLauncher.main(args);
-                return; // skip end of logging
             } else {
                 if (!v.isEmpty()) {
                     System.err.printf("warning: invalid bootstrap option: %s%n", v);
@@ -129,7 +123,20 @@ public final class App {
                 showUsage();
             }
         }
-        log.info("end");
+        return 0;
+    }
+
+    /** main **/
+    public static void main(String... args) {
+        log.info("start (version: %s)", getVersion());
+        log.debug("args=%s", Arrays.asList(args));
+        int exitStatus = run(args);
+        if (exitStatus == 0) {
+            log.info("end");
+        } else {
+            log.info("end abnormally, status=%d", exitStatus);
+            System.exit(exitStatus);
+        }
     }
 
 }
