@@ -5,10 +5,10 @@ import static java.util.Collections.*;
 import static stew5.text.TextUtilities.*;
 import java.sql.*;
 import java.util.*;
-import java.util.Map.Entry;
+import java.util.Map.*;
 import java.util.concurrent.*;
 import java.util.regex.*;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.table.*;
 import stew5.*;
 
 /**
@@ -108,12 +108,8 @@ final class ResultSetTableModel extends DefaultTableModel {
             return;
         }
         final Object oldValue = getValueAt(row, column);
-        final boolean changed;
-        if (newValue == null) {
-            changed = (newValue != oldValue);
-        } else {
-            changed = !newValue.equals(oldValue);
-        }
+        final boolean changed = !Objects.deepEquals(oldValue, newValue);
+        log.debug("oldValue=%s, newValue=%s, changed=%s", oldValue, newValue, changed);
         if (changed) {
             if (isLinkedRow(row)) {
                 Object[] keys = columnIdentifiers.toArray();
@@ -323,9 +319,7 @@ final class ResultSetTableModel extends DefaultTableModel {
     }
 
     private void executeDelete(Map<Object, Object> keyMap) throws SQLException {
-        final String sql = String.format("DELETE FROM %s WHERE %s",
-                                         tableName,
-                                         toKeyPhrase(primaryKeys));
+        final String sql = String.format("DELETE FROM %s WHERE %s", tableName, toKeyPhrase(primaryKeys));
         List<Object> a = new ArrayList<>();
         for (Object pk : primaryKeys) {
             a.add(keyMap.get(pk));
