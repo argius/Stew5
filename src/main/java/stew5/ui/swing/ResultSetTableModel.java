@@ -102,6 +102,8 @@ final class ResultSetTableModel extends DefaultTableModel {
             case TIME:
             case TIMESTAMP:
                 return Object.class;
+            case BIT:
+                return Object.class; // XXX ad-hoc workaround
         }
         return SqlTypes.toClass(types[columnIndex]);
     }
