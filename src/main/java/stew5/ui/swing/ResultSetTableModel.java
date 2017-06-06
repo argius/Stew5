@@ -21,6 +21,7 @@ final class ResultSetTableModel extends DefaultTableModel {
 
     private static final long serialVersionUID = -8861356207097438822L;
     private static final String PTN1 = "\\s*SELECT\\s.+?\\sFROM\\s+([^\\s]+).*";
+    private static final TypeConverter conv = new TypeConverter(true);
 
     private final int[] types;
     private final String commandString;
@@ -119,13 +120,20 @@ final class ResultSetTableModel extends DefaultTableModel {
             return;
         }
         final Object oldValue = getValueAt(row, column);
-        final boolean changed = !Objects.deepEquals(oldValue, newValue);
-        log.debug("oldValue=%s, newValue=%s, changed=%s", oldValue, newValue, changed);
+        final boolean disableConv = App.props.getAsBoolean("disableConversion");
+        final Object v;
+        if (oldValue == null || disableConv) {
+            v = newValue;
+        } else {
+            v = conv.convert(newValue, SqlTypes.toClass(types[column]));
+        }
+        final boolean changed = !Objects.deepEquals(oldValue, v);
+        log.debug("oldValue=%s, newValue=%s, disableConversion=%s, changed=%s", oldValue, v, disableConv, changed);
         if (changed) {
             if (isLinkedRow(row)) {
                 Object[] keys = columnIdentifiers.toArray();
                 try {
-                    executeUpdate(getRowData(keys, row), keys[column], newValue);
+                    executeUpdate(getRowData(keys, row), keys[column], v);
                 } catch (Exception ex) {
                     log.error(ex);
                     throw new RuntimeException(ex);
@@ -140,7 +148,7 @@ final class ResultSetTableModel extends DefaultTableModel {
                 log.debug("skip to update");
             }
         }
-        super.setValueAt(newValue, row, column);
+        super.setValueAt(v, row, column);
     }
 
     void addUnlinkedRow(Object[] rowData) {
@@ -160,10 +168,17 @@ final class ResultSetTableModel extends DefaultTableModel {
     }
 
     UnlinkedRow createUnlinkedRow(List<?> rowData) {
+        final boolean disableConv = App.props.getAsBoolean("disableConversion");
         final int n = rowData.size();
         UnlinkedRow row = new UnlinkedRow(n);
         for (int i = 0; i < n; i++) {
-            Object v = rowData.get(i);
+            Object o = rowData.get(i);
+            final Object v;
+            if (o == null || disableConv) {
+                v = o;
+            } else {
+                v = conv.convert(o, SqlTypes.toClass(types[i]));
+            }
             row.add(v);
         }
         return row;

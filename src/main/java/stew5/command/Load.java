@@ -102,21 +102,47 @@ public class Load extends Command {
         }
     }
 
+    protected List<Class<?>> getTypes(PreparedStatement stmt) {
+        final boolean disableConv = App.props.getAsBoolean("disableConversion");
+        if (!disableConv) {
+            try {
+                ParameterMetaData meta = stmt.getParameterMetaData();
+                final int n = meta.getParameterCount();
+                List<Class<?>> types = new ArrayList<>(n);
+                for (int i = 0; i < n; i++) {
+                    types.add(SqlTypes.toClass(meta.getParameterType(i + 1)));
+                }
+                return types;
+            } catch (SQLException ex) {
+                log.warn("failed to create type list: %s", ex);
+            }
+        }
+        return Collections.emptyList();
+    }
+
     protected void insertRecords(PreparedStatement stmt, Importer importer) throws IOException, SQLException {
         int recordCount = 0;
         int insertedCount = 0;
         int errorCount = 0;
+        TypeConverter conv = new TypeConverter(true);
+        List<Class<?>> types = getTypes(stmt);
+        final boolean autoConversion = !types.isEmpty();
         while (true) {
             Object[] row = importer.nextRow();
             if (row == null || row.length == 0) {
                 break;
             }
             ++recordCount;
+            if (autoConversion) {
+                final int n = Math.min(types.size(), row.length);
+                for (int i = 0; i < n; i++) {
+                    row[i] = conv.convertWithoutException(row[i], types.get(i));
+                }
+            }
             try {
                 for (int i = 0; i < row.length; i++) {
-                    int index = i + 1;
-                    Object o = row[i];
-                    stmt.setObject(index, o);
+                    Object o = autoConversion ? conv.convertWithoutException(row[i], types.get(i)) : row[i];
+                    stmt.setObject(i + 1, o);
                 }
                 insertedCount += stmt.executeUpdate();
             } catch (SQLException ex) {

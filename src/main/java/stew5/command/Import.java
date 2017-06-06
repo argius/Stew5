@@ -2,6 +2,7 @@ package stew5.command;
 
 import java.io.*;
 import java.sql.*;
+import java.util.*;
 import net.argius.stew.*;
 import stew5.*;
 import stew5.io.*;
@@ -54,11 +55,20 @@ public final class Import extends Load {
         int recordCount = 0;
         int insertedCount = 0;
         int errorCount = 0;
+        TypeConverter conv = new TypeConverter(true);
+        List<Class<?>> types = getTypes(stmt);
+        final boolean autoConversion = !types.isEmpty();
         while (true) {
             Object[] row = importer.nextRow();
             final boolean eof = row.length == 0;
             if (!eof) {
                 ++recordCount;
+                if (autoConversion) {
+                    final int n = Math.min(types.size(), row.length);
+                    for (int i = 0; i < n; i++) {
+                        row[i] = conv.convertWithoutException(row[i], types.get(i));
+                    }
+                }
                 try {
                     for (int i = 0; i < row.length; i++) {
                         stmt.setObject(i + 1, row[i]);
