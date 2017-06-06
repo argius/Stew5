@@ -63,12 +63,23 @@ final class ResultSetTableModel extends DefaultTableModel {
         }
     }
 
+    /**
+     * UnlinkedRow is a marker object which indicates that the row is unlinked.
+     */
     private static final class UnlinkedRow extends Vector<Object> {
 
+        UnlinkedRow(int initialCapacity) {
+            super(initialCapacity);
+        }
+
+        @SuppressWarnings("unused")
+        @Deprecated
         UnlinkedRow(Vector<?> rowData) {
             super(rowData);
         }
 
+        @SuppressWarnings("unused")
+        @Deprecated
         UnlinkedRow(Object[] rowData) {
             super(rowData.length);
             for (final Object o : rowData) {
@@ -133,19 +144,29 @@ final class ResultSetTableModel extends DefaultTableModel {
     }
 
     void addUnlinkedRow(Object[] rowData) {
-        addUnlinkedRow(convertToVector(rowData));
+        addRow(createUnlinkedRow(Arrays.asList(rowData)));
     }
 
     void addUnlinkedRow(Vector<?> rowData) {
-        addRow(new UnlinkedRow(rowData));
+        addRow(createUnlinkedRow(rowData));
     }
 
     void insertUnlinkedRow(int row, Object[] rowData) {
-        insertUnlinkedRow(row, new UnlinkedRow(rowData));
+        insertRow(row, createUnlinkedRow(Arrays.asList(rowData)));
     }
 
     void insertUnlinkedRow(int row, Vector<?> rowData) {
-        insertRow(row, new UnlinkedRow(rowData));
+        insertRow(row, createUnlinkedRow(rowData));
+    }
+
+    UnlinkedRow createUnlinkedRow(List<?> rowData) {
+        final int n = rowData.size();
+        UnlinkedRow row = new UnlinkedRow(n);
+        for (int i = 0; i < n; i++) {
+            Object v = rowData.get(i);
+            row.add(v);
+        }
+        return row;
     }
 
     /**
@@ -344,8 +365,7 @@ final class ResultSetTableModel extends DefaultTableModel {
                     if (conn.isClosed()) {
                         throw new SQLException(ResourceManager.Default.get("e.not-connect"));
                     }
-                    final PreparedStatement stmt = conn.prepareStatement(sql);
-                    try {
+                    try (final PreparedStatement stmt = conn.prepareStatement(sql)) {
                         ValueTransporter transporter = ValueTransporter.getInstance("");
                         int index = 0;
                         for (Object o : parameters) {
@@ -366,8 +386,6 @@ final class ResultSetTableModel extends DefaultTableModel {
                         if (updatedCount != 1) {
                             throw new SQLException("updated count is not 1, but " + updatedCount);
                         }
-                    } finally {
-                        stmt.close();
                     }
                 } catch (SQLException ex) {
                     log.error(ex);
@@ -475,15 +493,12 @@ final class ResultSetTableModel extends DefaultTableModel {
     static String findTableName(String cmd) {
         if (cmd != null) {
             StringBuilder buffer = new StringBuilder();
-            Scanner scanner = new Scanner(cmd);
-            try {
+            try (Scanner scanner = new Scanner(cmd)) {
                 while (scanner.hasNextLine()) {
                     final String line = scanner.nextLine();
                     buffer.append(line.replaceAll("/\\*.*?\\*/|//.*", ""));
                     buffer.append(' ');
                 }
-            } finally {
-                scanner.close();
             }
             Pattern p = Pattern.compile(PTN1, Pattern.CASE_INSENSITIVE);
             Matcher m = p.matcher(buffer);
@@ -559,8 +574,7 @@ final class ResultSetTableModel extends DefaultTableModel {
                                                String catalog,
                                                String schema,
                                                String table) throws SQLException {
-        ResultSet rs = dbmeta.getPrimaryKeys(catalog, schema, table);
-        try {
+        try (ResultSet rs = dbmeta.getPrimaryKeys(catalog, schema, table)) {
             List<String> pkList = new ArrayList<>();
             Set<String> schemaSet = new HashSet<>();
             while (rs.next()) {
@@ -571,8 +585,6 @@ final class ResultSetTableModel extends DefaultTableModel {
                 return Collections.emptyList();
             }
             return pkList;
-        } finally {
-            rs.close();
         }
     }
 
