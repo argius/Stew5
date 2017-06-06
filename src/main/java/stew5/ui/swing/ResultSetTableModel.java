@@ -427,7 +427,7 @@ final class ResultSetTableModel extends DefaultTableModel {
                     log.debug("", ex);
                 }
             }
-            throw errors.get(0);
+            throw new SQLException(errors.get(0));
         }
     }
 
