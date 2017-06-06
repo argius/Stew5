@@ -11,6 +11,7 @@ import java.awt.event.*;
 import java.beans.*;
 import java.io.*;
 import java.sql.*;
+import java.text.*;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
@@ -505,6 +506,36 @@ final class ResultSetTable extends JTable implements AnyActionListener, TextSear
     public void setModel(TableModel dataModel) {
         dataModel.addTableModelListener(rowHeader);
         super.setModel(dataModel);
+    }
+
+    @Override
+    public TableCellRenderer getDefaultRenderer(Class<?> columnClass) {
+        if (columnClass == Float.class || columnClass == Double.class) {
+            // 2017-06-06 workaround for "Cannot format given Object as a Number"
+            class DoubleCellRenderer extends DefaultTableCellRenderer.UIResource {
+                NumberFormat formatter;
+                DoubleCellRenderer() {
+                    setHorizontalAlignment(JLabel.RIGHT);
+                }
+                @Override
+                public void setValue(Object value) {
+                    final String text;
+                    if (value == null) {
+                        text = "";
+                    } else if (value instanceof CharSequence) {
+                        text = value.toString();
+                    } else {
+                        if (formatter == null) {
+                            formatter = NumberFormat.getInstance();
+                        }
+                        text = formatter.format(value);
+                    }
+                    setText(text);
+                }
+            }
+            return new DoubleCellRenderer();
+        }
+        return super.getDefaultRenderer(columnClass);
     }
 
     /**
