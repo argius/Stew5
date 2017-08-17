@@ -58,12 +58,10 @@ public final class XmlExporter extends Exporter {
         xew.add(newLine);
         xew.add(xef.createStartElement(QName.valueOf(TAG_TABLE), null, null));
         xew.add(newLine);
-        xew.add(newLine);
         List<Attribute> attrs = Arrays.asList(xef.createAttribute("name", "generator"));
         xew.add(xef.createStartElement(QName.valueOf("meta"), attrs.iterator(), null));
         xew.add(xef.createCharacters(fqcn + " version " + App.getVersion()));
         xew.add(xef.createEndElement(QName.valueOf("meta"), null));
-        xew.add(newLine);
         xew.add(newLine);
         xew.flush();
     }
@@ -82,7 +80,6 @@ public final class XmlExporter extends Exporter {
             }
             xew.add(xef.createEndElement(parentTag, null));
             xew.add(newLine);
-            xew.add(newLine);
             xew.flush();
         } catch (FactoryConfigurationError | XMLStreamException | RuntimeException ex) {
             throw new IOException(ex);
@@ -98,7 +95,6 @@ public final class XmlExporter extends Exporter {
             m.setProperty(Marshaller.JAXB_FRAGMENT, true);
             XmlRowEntity row = new XmlRowEntity(Arrays.asList(values));
             m.marshal(row, xew);
-            xew.add(newLine);
             xew.add(newLine);
             xew.flush();
         } catch (JAXBException | XMLStreamException | RuntimeException ex) {
