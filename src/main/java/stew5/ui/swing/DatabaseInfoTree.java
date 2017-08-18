@@ -48,8 +48,9 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
     private static final String TABLE_TYPE_VIEW = "VIEW";
     private static final String TABLE_TYPE_INDEX = "INDEX";
     private static final String TABLE_TYPE_SEQUENCE = "SEQUENCE";
-    static final List<String> DEFAULT_TABLE_TYPES = //
-    Arrays.asList(TABLE_TYPE_TABLE, TABLE_TYPE_VIEW, TABLE_TYPE_INDEX, TABLE_TYPE_SEQUENCE);
+    // @formatter:off
+    static final List<String> DEFAULT_TABLE_TYPES = Arrays.asList(TABLE_TYPE_TABLE, TABLE_TYPE_VIEW, TABLE_TYPE_INDEX, TABLE_TYPE_SEQUENCE);
+    // @formatter:on
 
     static volatile boolean showColumnNumber;
 
@@ -211,9 +212,7 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
         Object o = path.getLastPathComponent();
         if (o instanceof ColumnNode) {
             ColumnNode node = (ColumnNode)o;
-            AnyActionEvent ev = new AnyActionEvent(this,
-                                                   ResultSetTable.ActionKey.jumpToColumn,
-                                                   node.getName());
+            AnyActionEvent ev = new AnyActionEvent(this, ResultSetTable.ActionKey.jumpToColumn, node.getName());
             anyActionListener.anyActionPerformed(ev);
         }
     }
@@ -496,8 +495,7 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
             File confFile = App.getSystemFile("autoexpansion.tsv");
             if (confFile.exists() && confFile.length() > 0) {
                 AnyAction aa = new AnyAction(this);
-                Scanner r = new Scanner(confFile);
-                try {
+                try (Scanner r = new Scanner(confFile)) {
                     while (r.hasNextLine()) {
                         final String line = r.nextLine();
                         if (line.matches("^\\s*#.*")) {
@@ -505,8 +503,6 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
                         }
                         aa.doParallel("expandNodes", Arrays.asList(line.split("\t")));
                     }
-                } finally {
-                    r.close();
                 }
             }
         } catch (IOException ex) {
@@ -712,17 +708,12 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
                                                      String catalog,
                                                      String schema) throws SQLException {
             List<String> tableTypes = new ArrayList<>(DEFAULT_TABLE_TYPES);
-            try {
-                ResultSet rs = dbmeta.getTableTypes();
-                try {
-                    while (rs.next()) {
-                        final String tableType = rs.getString(1);
-                        if (!DEFAULT_TABLE_TYPES.contains(tableType)) {
-                            tableTypes.add(tableType);
-                        }
+            try (ResultSet rs = dbmeta.getTableTypes()) {
+                while (rs.next()) {
+                    final String tableType = rs.getString(1);
+                    if (!DEFAULT_TABLE_TYPES.contains(tableType)) {
+                        tableTypes.add(tableType);
                     }
-                } finally {
-                    rs.close();
                 }
             } catch (SQLException ex) {
                 log.warn("getTableTypes at getTableTypeNodes", ex);
@@ -749,22 +740,16 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
         protected List<InfoNode> createChildren(DatabaseMetaData dbmeta) throws SQLException {
             List<InfoNode> a = new ArrayList<>();
             if (dbmeta.supportsCatalogsInDataManipulation()) {
-                ResultSet rs = dbmeta.getCatalogs();
-                try {
+                try (ResultSet rs = dbmeta.getCatalogs()) {
                     while (rs.next()) {
                         a.add(new CatalogNode(rs.getString(1)));
                     }
-                } finally {
-                    rs.close();
                 }
             } else if (dbmeta.supportsSchemasInDataManipulation()) {
-                ResultSet rs = dbmeta.getSchemas();
-                try {
+                try (ResultSet rs = dbmeta.getSchemas()) {
                     while (rs.next()) {
                         a.add(new SchemaNode(null, rs.getString(1)));
                     }
-                } finally {
-                    rs.close();
                 }
             } else {
                 a.addAll(getTableTypeNodes(dbmeta, null, null));
@@ -787,13 +772,10 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
         protected List<InfoNode> createChildren(DatabaseMetaData dbmeta) throws SQLException {
             List<InfoNode> a = new ArrayList<>();
             if (dbmeta.supportsSchemasInDataManipulation()) {
-                ResultSet rs = dbmeta.getSchemas();
-                try {
+                try (ResultSet rs = dbmeta.getSchemas()) {
                     while (rs.next()) {
                         a.add(new SchemaNode(name, rs.getString(1)));
                     }
-                } finally {
-                    rs.close();
                 }
             } else {
                 a.addAll(getTableTypeNodes(dbmeta, name, null));
@@ -841,15 +823,12 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
         @Override
         protected List<InfoNode> createChildren(DatabaseMetaData dbmeta) throws SQLException {
             List<InfoNode> a = new ArrayList<>();
-            ResultSet rs = dbmeta.getTables(catalog, schema, null, new String[]{tableType});
-            try {
+            try (ResultSet rs = dbmeta.getTables(catalog, schema, null, new String[]{tableType})) {
                 while (rs.next()) {
                     final String table = rs.getString(3);
                     final String type = rs.getString(4);
                     a.add(new TableNode(catalog, schema, table, type));
                 }
-            } finally {
-                rs.close();
             }
             return a;
         }
@@ -864,11 +843,8 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
         }
 
         boolean hasItems(DatabaseMetaData dbmeta) throws SQLException {
-            ResultSet rs = dbmeta.getTables(catalog, schema, null, new String[]{tableType});
-            try {
+            try (ResultSet rs = dbmeta.getTables(catalog, schema, null, new String[]{tableType})) {
                 return rs.next();
-            } finally {
-                rs.close();
             }
         }
 
@@ -892,13 +868,10 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
         @Override
         protected List<InfoNode> createChildren(DatabaseMetaData dbmeta) throws SQLException {
             List<InfoNode> a = new ArrayList<>();
-            ResultSet rs = dbmeta.getColumns(catalog, schema, name, null);
-            try {
+            try (ResultSet rs = dbmeta.getColumns(catalog, schema, name, null)) {
                 while (rs.next()) {
                     a.add(new ColumnNode(rs.getString(4), rs.getString(6), rs.getInt(7), rs.getString(18), this));
                 }
-            } finally {
-                rs.close();
             }
             return a;
         }
