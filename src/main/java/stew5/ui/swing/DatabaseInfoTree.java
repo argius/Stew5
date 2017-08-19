@@ -728,6 +728,24 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
             return a;
         }
 
+        static void arrangeSchemaNodes(List<InfoNode> nodes, String schemaName) {
+            if (App.props.getAsBoolean("ui.swing.tree.moveToTopOwnSchema")) {
+                final int index = getNodeIndex(nodes, schemaName);
+                if (index >= 0) {
+                    Collections.swap(nodes, 0, index);
+                }
+            }
+        }
+
+        private static int getNodeIndex(List<InfoNode> nodes, String schemaName) {
+            for (InfoNode node : nodes) {
+                if (node instanceof SchemaNode && Objects.equals(((SchemaNode)node).schema, schemaName)) {
+                    return nodes.indexOf(node);
+                }
+            }
+            return -1;
+        }
+
     }
 
     private static class ConnectorNode extends InfoNode {
@@ -751,6 +769,7 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
                         a.add(new SchemaNode(null, rs.getString(1)));
                     }
                 }
+                arrangeSchemaNodes(a, dbmeta.getUserName());
             } else {
                 a.addAll(getTableTypeNodes(dbmeta, null, null));
             }
@@ -777,6 +796,7 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
                         a.add(new SchemaNode(name, rs.getString(1)));
                     }
                 }
+                arrangeSchemaNodes(a, dbmeta.getUserName());
             } else {
                 a.addAll(getTableTypeNodes(dbmeta, name, null));
             }
