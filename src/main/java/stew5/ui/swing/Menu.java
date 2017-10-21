@@ -1,6 +1,5 @@
 package stew5.ui.swing;
 
-import static stew5.ui.swing.AnyActionKey.showAbout;
 import static stew5.ui.swing.Menu.Item.*;
 import static stew5.ui.swing.Utilities.*;
 import java.awt.*;
@@ -8,11 +7,9 @@ import java.beans.*;
 import java.io.*;
 import java.util.*;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map.*;
 import java.util.regex.*;
 import javax.swing.*;
-import com.apple.eawt.*;
-import com.apple.eawt.AppEvent.*;
 import stew5.*;
 
 /**
@@ -309,40 +306,29 @@ final class Menu extends JMenuBar implements PropertyChangeListener {
         return !App.props.getAsBoolean("ui.suppressGenerateMnemonic") && res.getInt("auto-mnemonic") == 1;
     }
 
+    interface MenuCustomizer {
+        void customize(Map<String, JMenuItem> itemMap, AnyActionListener anyActionListener);
+    }
+
+    MenuCustomizer getMenuCustomizer(String simpleClassName) {
+        try {
+            final String fqcn = getClass().getPackage().getName() + "." + simpleClassName;
+            final Object o = DynamicLoader.loadClass(fqcn).newInstance();
+            return (MenuCustomizer)o;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void customize(Map<String, JMenuItem> itemMap, final AnyActionListener anyActionListener) {
-        if (System.getProperty("os.name", "").regionMatches(true, 0, "Mac OS X", 0, 8)) {
-            class OrangeQuitHandler implements QuitHandler {
-                @Override
-                public void handleQuitRequestWith(QuitEvent evt, QuitResponse qr) {
-                    if (JOptionPane.showConfirmDialog(Menu.this.getParent(),
-                                                      res.get("i.confirm-quit"),
-                                                      "",
-                                                      JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                        WindowLauncher.exit();
-                        qr.performQuit();
-                    } else {
-                        qr.cancelQuit();
-                    }
-                }
+        try {
+            final String javaVersionString = System.getProperty("java.runtime.version", "0");
+            final int javaMajorVersion = Integer.parseInt(javaVersionString.replaceFirst("^(\\d+).+?$", "$1"));
+            if (System.getProperty("os.name", "").regionMatches(true, 0, "Mac OS X", 0, 8)) {
+                AppleMenu.customize(this, javaMajorVersion, itemMap, anyActionListener);
             }
-            class OrangeAboutHandler implements AboutHandler {
-                @Override
-                public void handleAbout(AboutEvent evt) {
-                    anyActionListener.anyActionPerformed(new AnyActionEvent(evt.getSource(), showAbout));
-                }
-            }
-            Application app = Application.getApplication();
-            app.setDockIconImage(Utilities.getImageIcon("stew.png").getImage());
-            app.setAboutHandler(new OrangeAboutHandler());
-            app.setQuitHandler(new OrangeQuitHandler());
-            for (Entry<String, JMenuItem> entry : new ArrayList<>(itemMap.entrySet())) {
-                String key = entry.getKey();
-                if (key.equals(AnyActionKey.quit.toString()) || key.equals(AnyActionKey.showAbout.toString())) {
-                    itemMap.remove(key);
-                    JMenuItem item = entry.getValue();
-                    item.getParent().remove(item);
-                }
-            }
+        } catch (Throwable th) {
+            WindowOutputProcessor.showErrorDialog(this.getParent(), th);
         }
     }
 
