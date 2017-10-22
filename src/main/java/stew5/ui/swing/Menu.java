@@ -306,20 +306,6 @@ final class Menu extends JMenuBar implements PropertyChangeListener {
         return !App.props.getAsBoolean("ui.suppressGenerateMnemonic") && res.getInt("auto-mnemonic") == 1;
     }
 
-    interface MenuCustomizer {
-        void customize(Map<String, JMenuItem> itemMap, AnyActionListener anyActionListener);
-    }
-
-    MenuCustomizer getMenuCustomizer(String simpleClassName) {
-        try {
-            final String fqcn = getClass().getPackage().getName() + "." + simpleClassName;
-            final Object o = DynamicLoader.loadClass(fqcn).newInstance();
-            return (MenuCustomizer)o;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private void customize(Map<String, JMenuItem> itemMap, final AnyActionListener anyActionListener) {
         try {
             final String javaVersionString = System.getProperty("java.runtime.version", "0");
