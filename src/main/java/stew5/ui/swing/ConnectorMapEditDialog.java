@@ -7,7 +7,7 @@ import static stew5.ui.swing.ConnectorMapEditDialog.ActionKey.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.util.Properties;
+import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import stew5.*;
@@ -132,7 +132,7 @@ final class ConnectorMapEditDialog extends JDialog implements ChangeListener, An
             if (newId == null || newId.equals(entry.getId())) {
                 return;
             }
-            connectorMap.remove(entry);
+            connectorMap.remove(entry.getId());
             connectorMap.put(newId, entry.getConnector());
             DefaultListModel<ConnectorEntry> m = (DefaultListModel<ConnectorEntry>)idList.getModel();
             Connector newConnector;
