@@ -65,13 +65,17 @@ public class LoadTest {
             TestUtils.setConnectionToEnv(conn, env); // for using Commands.invoke
             TestUtils.writeLines(f.toPath(), "2,Bob", "3,Chris");
             PreparedStatement stmt = conn.prepareStatement("insert into table1 values (?, ?)");
-            cmdLoad.insertRecords(stmt, Importer.getImporter(f));
+            try (Importer importer = Importer.getImporter(f)) {
+                cmdLoad.insertRecords(stmt, importer);
+            }
             op.clearBuffer();
             Commands.invoke(env, "select id || '+' || name from table1 order by id");
             assertThat(op.getOutputString(), Matchers.containsString("[1+argius][2+Bob][3+Chris]"));
             // in case of error
             TestUtils.writeLines(f.toPath(), "1");
-            cmdLoad.insertRecords(stmt, Importer.getImporter(f));
+            try (Importer importer = Importer.getImporter(f)) {
+                cmdLoad.insertRecords(stmt, importer);
+            }
             assertThat(op.getOutputString(), Matchers.matchesPattern(".+0.+"));
             conn.rollback();
         }

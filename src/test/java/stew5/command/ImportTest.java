@@ -60,7 +60,9 @@ public class ImportTest {
             TestUtils.setConnectionToEnv(conn, env); // for using Commands.invoke
             TestUtils.writeLines(f.toPath(), "2,Bob", "3,Chris");
             PreparedStatement stmt = conn.prepareStatement("insert into table1 values (?, ?)");
-            cmdImport.insertRecords(stmt, Importer.getImporter(f));
+            try (Importer importer = Importer.getImporter(f)) {
+                cmdImport.insertRecords(stmt, importer);
+            }
             op.clearBuffer();
             Commands.invoke(env, "select id || '+' || name from table1 order by id");
             assertThat(op.getOutputString(), Matchers.containsString("[1+argius][2+Bob][3+Chris]"));
@@ -68,7 +70,9 @@ public class ImportTest {
             TestUtils.writeLines(f.toPath(), "X,Y,Z");
             stmt.clearBatch();
             stmt.clearParameters();
-            cmdImport.insertRecords(stmt, Importer.getImporter(f));
+            try (Importer importer = Importer.getImporter(f)) {
+                cmdImport.insertRecords(stmt, importer);
+            }
             assertThat(op.getOutputString(), Matchers.matchesPattern(".+0.+"));
             conn.rollback();
         }
@@ -91,7 +95,9 @@ public class ImportTest {
             TestUtils.writeLines(f.toPath(), "1");
             PreparedStatement stmt = conn.prepareStatement("insert into table1 values (?, ?)");
             thrown.expect(SQLException.class);
-            cmdImport.insertRecords(stmt, Importer.getImporter(f));
+            try (Importer importer = Importer.getImporter(f)) {
+                cmdImport.insertRecords(stmt, importer);
+            }
         }
 
     }
@@ -105,7 +111,9 @@ public class ImportTest {
             TestUtils.writeLines(f.toPath(), "X,Y");
             PreparedStatement stmt = conn.prepareStatement("insert into table1 values (?, ?)");
             thrown.expect(SQLException.class);
-            cmdImport.insertRecords(stmt, Importer.getImporter(f));
+            try (Importer importer = Importer.getImporter(f)) {
+                cmdImport.insertRecords(stmt, importer);
+            }
         }
 
     }
@@ -131,7 +139,9 @@ public class ImportTest {
             TestUtils.writeLines(f.toPath(), "1");
             PreparedStatement stmt = conn.prepareStatement("create table importtest as select * from table1 where id=?");
             thrown.expect(IllegalStateException.class);
-            cmdImport.insertRecords(stmt, Importer.getImporter(f));
+            try (Importer importer = Importer.getImporter(f)) {
+                cmdImport.insertRecords(stmt, importer);
+            }
             conn.rollback();
         }
     }
