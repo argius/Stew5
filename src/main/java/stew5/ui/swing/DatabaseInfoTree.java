@@ -81,9 +81,9 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
             anyActionPerformed(new AnyActionEvent(this, jumpToColumnByName));
         }
         if (e.getID() == MouseEvent.MOUSE_CLICKED) {
-            if (SwingUtilities.isRightMouseButton(e)) {
+            if (SwingUtilities.isLeftMouseButton(e)) {
                 int sckm = Utilities.getMenuShortcutKeyMask();
-                if ((e.getModifiers() | sckm) == sckm) {
+                if ((e.getModifiers() & sckm) == sckm) {
                     selectionModel.setSelectionPath(getPathForRow(getRowForLocation(e.getX(), e.getY())));
                     anyActionPerformed(new AnyActionEvent(this, showLimitedRecords));
                 }
@@ -391,7 +391,7 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
     }
 
     void showLimitedRecords() throws SQLException {
-        if (!App.props.getAsBoolean("sql.enablesLimit")) {
+        if (!App.props.getAsBoolean("sql.limitRecords.enabled")) {
             return;
         }
         List<TreeNode> nodes = getSelectionNodes();
@@ -402,8 +402,9 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
         if (!(node instanceof TableNode)) {
             return;
         }
-        String key = "sql.enablesLimit.sqlPattern." + dbmeta.getDatabaseProductName();
-        String keyDefault = "sql.enablesLimit.sqlPattern.default";
+        final String keyPrefix = "sql.limitRecords.sqlPattern.";
+        String key = keyPrefix + dbmeta.getDatabaseProductName();
+        String keyDefault = keyPrefix + "default";
         final String sqlPattern;
         if (App.props.hasKey(key)) {
             sqlPattern = App.props.get(key);
