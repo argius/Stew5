@@ -47,6 +47,7 @@ public enum AnyActionKey {
     sortResult,
     importFile,
     exportFile,
+    showLimitedRecords,
     showHelp,
     showAbout,
     unknown;

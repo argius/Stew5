@@ -15,6 +15,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.sql.*;
+import java.text.*;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.List;
@@ -79,6 +80,15 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
         if (e.getID() == MouseEvent.MOUSE_CLICKED && e.getClickCount() % 2 == 0) {
             anyActionPerformed(new AnyActionEvent(this, jumpToColumnByName));
         }
+        if (e.getID() == MouseEvent.MOUSE_CLICKED) {
+            if (SwingUtilities.isRightMouseButton(e)) {
+                int sckm = Utilities.getMenuShortcutKeyMask();
+                if ((e.getModifiers() | sckm) == sckm) {
+                    selectionModel.setSelectionPath(getPathForRow(getRowForLocation(e.getX(), e.getY())));
+                    anyActionPerformed(new AnyActionEvent(this, showLimitedRecords));
+                }
+            }
+        }
     }
 
     @Override
@@ -133,6 +143,12 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
         } else if (ev.isAnyOf(toggleShowColumnNumber)) {
             showColumnNumber = !showColumnNumber;
             repaint();
+        } else if (ev.isAnyOf(showLimitedRecords)) {
+            try {
+                showLimitedRecords();
+            } catch (SQLException ex) {
+                showInformationMessageDialog(this, ex.getMessage(), "");
+            }
         } else {
             log.warn("not expected: Event=%s", ev);
         }
@@ -372,6 +388,34 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
             phrase = String.format("UPDATE %s SET %s", tableName, join(", ", columnExpressions));
         }
         return phrase;
+    }
+
+    void showLimitedRecords() throws SQLException {
+        if (!App.props.getAsBoolean("sql.enablesLimit")) {
+            return;
+        }
+        List<TreeNode> nodes = getSelectionNodes();
+        if (nodes.size() != 1) {
+            return;
+        }
+        TreeNode node = nodes.get(0);
+        if (!(node instanceof TableNode)) {
+            return;
+        }
+        String key = "sql.enablesLimit.sqlPattern." + dbmeta.getDatabaseProductName();
+        String keyDefault = "sql.enablesLimit.sqlPattern.default";
+        final String sqlPattern;
+        if (App.props.hasKey(key)) {
+            sqlPattern = App.props.get(key);
+        } else if (App.props.hasKey(keyDefault)) {
+            sqlPattern = App.props.get(keyDefault);
+        } else {
+            return; // cancel
+        }
+        TableNode t = (TableNode)node;
+        final String sql = MessageFormat.format(sqlPattern, t.getNodeFullName());
+        anyActionListener.anyActionPerformed(new AnyActionEvent(this, ConsoleTextArea.ActionKey.insertText, sql));
+        anyActionListener.anyActionPerformed(new AnyActionEvent(this, executeCommand));
     }
 
     // text-search

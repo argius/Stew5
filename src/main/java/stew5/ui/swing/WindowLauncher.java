@@ -365,6 +365,8 @@ public final class WindowLauncher implements
                 resultSetTable.anyActionPerformed(ev);
             } else if (ev.isAnyOf(ConsoleTextArea.ActionKey.insertText)) {
                 textArea.anyActionPerformed(ev);
+            } else if (ev.isAnyOf(showLimitedRecords)) {
+                infoTree.anyActionPerformed(ev);
             } else {
                 log.warn("not expected: Event=%s", ev);
             }
