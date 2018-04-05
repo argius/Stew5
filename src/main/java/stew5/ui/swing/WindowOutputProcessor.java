@@ -372,8 +372,9 @@ final class WindowOutputProcessor extends JFrame implements OutputProcessor, Any
 
     private void showVersionInfo() {
         ImageIcon icon = new ImageIcon();
-        if (getIconImage() != null) {
-            icon.setImage(getIconImage());
+        final Image image = getIconImage();
+        if (image != null) {
+            icon.setImage(image.getScaledInstance(48, 48, Image.SCALE_SMOOTH));
         }
         final String about = res.get(".about", App.getVersion());
         showMessageDialog(this, about, null, PLAIN_MESSAGE, icon);

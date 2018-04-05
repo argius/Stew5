@@ -708,7 +708,11 @@ final class DatabaseInfoTree extends JTree implements AnyActionListener, TextSea
                                                       int row,
                                                       boolean hasFocus) {
             super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
-            setIcon((value instanceof InfoNode) ? Utilities.getImageIcon(((InfoNode)value).getIconName()) : null);
+            if (value instanceof InfoNode) {
+                ImageIcon icon = Utilities.getImageIcon(((InfoNode)value).getIconName());
+                icon.setImage(icon.getImage().getScaledInstance(18, 18, Image.SCALE_SMOOTH));
+                setIcon(icon);
+            }
             if (value instanceof ColumnNode) {
                 if (showColumnNumber) {
                     TreePath path = tree.getPathForRow(row);
